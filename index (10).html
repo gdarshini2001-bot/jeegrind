@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<meta name="theme-color" content="#0a0a12"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="JEEGrind"/>
+<title>JEEGrind</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet"/>
+<link rel="manifest" href="data:application/json,{%22name%22:%22JEEGrind%22,%22short_name%22:%22JEEGrind%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22%230a0a12%22,%22theme_color%22:%22%230a0a12%22}"/>
+<style>
+:root{
+  --bg:#0a0a12;--bg2:#12121f;--bg3:#1a1a2e;--border:#2a2a40;
+  --text:#f0f0ff;--muted:#6b6b8a;--accent:#ff6b35;--accent2:#7c3aed;
+  --math:#3b82f6;--phys:#06b6d4;--chem:#10b981;--gold:#f59e0b;
+}
+body.light{--bg:#f0f4ff;--bg2:#ffffff;--bg3:#e8eeff;--border:#c7d2fe;--text:#0a0a2e;--muted:#6b7280;}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden;transition:background .3s,color .3s;}
+::-webkit-scrollbar{width:3px;}::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+.screen{display:none;min-height:100vh;}.screen.active{display:block;}
+
+/* ── AUTH ── */
+#authScreen{display:none;min-height:100vh;position:relative;overflow:hidden;}
+#authScreen.active{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;}
+.auth-bg{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 80% 60% at 50% -10%,#7c3aed22,transparent 70%),radial-gradient(ellipse 60% 40% at 80% 100%,#ff6b3511,transparent 60%);}
+.auth-logo{font-family:'Bebas Neue',sans-serif;font-size:clamp(52px,15vw,80px);letter-spacing:2px;line-height:1;text-align:center;margin-bottom:6px;}
+.auth-logo span{color:var(--accent);}
+.auth-tagline{color:var(--muted);font-size:13px;text-align:center;margin-bottom:36px;}
+.auth-card{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:28px 24px;width:100%;max-width:380px;}
+.auth-tabs{display:flex;background:var(--bg3);border-radius:12px;padding:4px;margin-bottom:24px;}
+.auth-tab{flex:1;padding:9px;border-radius:9px;border:none;background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;font-weight:600;font-size:14px;cursor:pointer;transition:all .2s;}
+.auth-tab.active{background:var(--accent);color:#fff;}
+.form-group{margin-bottom:16px;}
+.form-label{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:7px;display:block;}
+.form-input{width:100%;padding:13px 16px;border-radius:12px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;outline:none;transition:border-color .2s;}
+.form-input:focus{border-color:var(--accent);}
+.form-input::placeholder{color:var(--muted);}
+.btn-primary{width:100%;padding:14px;border-radius:12px;border:none;background:var(--accent);color:#fff;font-family:'DM Sans',sans-serif;font-weight:700;font-size:15px;cursor:pointer;transition:all .15s;margin-top:4px;}
+.btn-primary:hover{filter:brightness(1.1);transform:translateY(-1px);}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+.auth-error{background:#7f1d1d33;border:1px solid #dc262644;border-radius:10px;padding:10px 14px;font-size:13px;color:#fca5a5;margin-bottom:14px;display:none;}
+
+/* ── OATH ── */
+#oathScreen{display:none;min-height:100vh;position:relative;overflow:hidden;}
+#oathScreen.active{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;}
+.oath-bg{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 100% 80% at 50% 50%,#7c3aed18,transparent 70%);}
+.oath-card{background:var(--bg2);border:1px solid var(--accent2);border-radius:24px;padding:32px 24px;width:100%;max-width:420px;text-align:center;}
+@keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.08);}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:none;}}
+@keyframes spin{to{transform:rotate(360deg);}}
+@keyframes pop{0%{transform:scale(.85)}60%{transform:scale(1.05)}100%{transform:scale(1)}}
+@keyframes glow{0%,100%{box-shadow:0 0 20px #7c3aed33;}50%{box-shadow:0 0 40px #7c3aed66;}}
+.oath-flame{font-size:56px;margin-bottom:12px;animation:pulse 2s ease infinite;display:block;}
+.oath-title{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:2px;color:var(--accent);margin-bottom:8px;}
+.oath-text{background:var(--bg3);border:1px solid var(--border);border-radius:14px;padding:20px;text-align:left;font-size:14px;line-height:1.9;color:var(--text);margin-bottom:20px;}
+.oath-text strong{color:var(--accent);font-weight:700;}
+.oath-check{display:flex;align-items:flex-start;gap:12px;background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:16px;cursor:pointer;text-align:left;}
+.oath-check input{width:20px;height:20px;flex-shrink:0;accent-color:var(--accent);cursor:pointer;margin-top:2px;}
+.oath-check span{font-size:13px;font-weight:600;line-height:1.5;}
+.btn-oath{width:100%;padding:16px;border-radius:14px;border:none;font-family:'DM Sans',sans-serif;font-weight:800;font-size:16px;cursor:pointer;transition:all .2s;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;letter-spacing:.5px;animation:glow 3s ease infinite;}
+.btn-oath:disabled{opacity:.4;cursor:not-allowed;animation:none;}
+
+/* ── APP ── */
+#appScreen{display:none;flex-direction:column;}
+#appScreen.active{display:flex;}
+.topbar{position:fixed;top:0;left:0;right:0;z-index:99;background:var(--bg2);border-bottom:1px solid var(--border);padding:12px 18px;display:flex;align-items:center;justify-content:space-between;}
+.topbar-logo{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;}
+.topbar-logo span{color:var(--accent);}
+.topbar-right{display:flex;align-items:center;gap:8px;}
+.stat-pill{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;background:var(--bg3);border:1px solid var(--border);padding:5px 10px;border-radius:99px;}
+.hamburger-btn{background:transparent;border:none;color:var(--text);cursor:pointer;font-size:22px;padding:4px;display:flex;align-items:center;justify-content:center;}
+
+/* ── SIDE MENU ── */
+.menu-overlay{position:fixed;inset:0;background:#00000088;z-index:200;display:none;backdrop-filter:blur(2px);}
+.menu-overlay.open{display:block;}
+.side-menu{position:fixed;right:0;top:0;bottom:0;width:min(320px,85vw);background:var(--bg2);border-left:1px solid var(--border);z-index:201;transform:translateX(100%);transition:transform .3s ease;display:flex;flex-direction:column;overflow-y:auto;}
+.side-menu.open{transform:translateX(0);}
+.menu-header{padding:20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:14px;}
+.menu-avatar-big{width:54px;height:54px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;position:relative;}
+.menu-avatar-big.premium{box-shadow:0 0 0 2px var(--gold);}
+.premium-crown{position:absolute;top:-8px;right:-8px;font-size:14px;}
+.menu-user-name{font-weight:800;font-size:16px;}
+.menu-user-email{font-size:12px;color:var(--muted);margin-top:2px;}
+.menu-premium-badge{display:inline-block;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;font-size:10px;font-weight:800;padding:2px 8px;border-radius:99px;margin-top:4px;letter-spacing:.5px;}
+.menu-section{padding:12px 16px 4px;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
+.menu-item{display:flex;align-items:center;gap:14px;padding:14px 20px;cursor:pointer;transition:background .15s;border:none;background:transparent;color:var(--text);width:100%;text-align:left;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;}
+.menu-item:hover{background:var(--bg3);}
+.menu-item-icon{font-size:20px;width:26px;text-align:center;}
+.menu-item-label{flex:1;}
+.menu-item-badge{font-size:11px;background:var(--accent);color:#fff;padding:2px 8px;border-radius:99px;font-weight:700;}
+.menu-divider{height:1px;background:var(--border);margin:8px 16px;}
+.menu-item.danger{color:#ef4444;}
+.menu-item.premium-item{color:var(--gold);}
+
+/* ── MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:#00000099;z-index:300;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:28px 24px;width:100%;max-width:420px;max-height:85vh;overflow-y:auto;animation:pop .3s ease;}
+.modal-title{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:1px;margin-bottom:20px;display:flex;align-items:center;gap:10px;}
+.modal-close{margin-left:auto;background:transparent;border:none;color:var(--muted);font-size:22px;cursor:pointer;}
+.emoji-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:16px;}
+.emoji-opt{font-size:28px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:12px;border:2px solid var(--border);cursor:pointer;transition:all .15s;background:var(--bg3);}
+.emoji-opt.selected{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 15%,var(--bg3));}
+.btn-modal{padding:12px 20px;border-radius:12px;border:none;font-family:'DM Sans',sans-serif;font-weight:700;font-size:14px;cursor:pointer;transition:all .15s;}
+.btn-modal.primary{background:var(--accent);color:#fff;}
+.btn-modal.secondary{background:var(--bg3);color:var(--text);}
+
+/* ── BROADCAST BANNER ── */
+#broadcastBanner{display:none;background:linear-gradient(135deg,var(--accent2),#5b21b6);border-bottom:1px solid #7c3aed66;padding:10px 18px;font-size:13px;font-weight:600;text-align:center;position:fixed;top:57px;left:0;right:0;z-index:98;}
+#broadcastBanner.show{display:block;}
+.broadcast-close{float:right;background:transparent;border:none;color:#fff;cursor:pointer;font-size:16px;margin-left:10px;}
+
+/* ── PAGES ── */
+.nav{position:fixed;bottom:0;left:0;right:0;z-index:100;background:var(--bg2);border-top:1px solid var(--border);display:flex;padding:8px 0 max(8px,env(safe-area-inset-bottom));}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;border:none;background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:10px;font-weight:600;cursor:pointer;padding:6px 0;transition:color .2s;text-transform:uppercase;letter-spacing:.5px;}
+.nav-btn.active{color:var(--accent);}
+.nav-icon{font-size:20px;line-height:1;}
+.page{display:none;padding:80px 16px 90px;}
+.page.active{display:block;}
+.section-title{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:12px;}
+
+/* ── HOME ── */
+.title-banner{border-radius:16px;padding:18px 20px;margin-bottom:16px;background:var(--bg2);border:1px solid var(--border);display:flex;align-items:center;gap:14px;}
+.streak-badge{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;background:var(--accent);color:#fff;padding:6px 12px;border-radius:10px;}
+.sub-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
+.sub-card{border-radius:14px;padding:16px 8px;text-align:center;border:2px solid var(--border);background:var(--bg2);cursor:pointer;transition:all .2s;}
+.sub-card.selected{border-color:var(--sel-color);background:color-mix(in srgb,var(--sel-color) 15%,var(--bg2));}
+.sub-card.disabled{opacity:.4;cursor:not-allowed;}
+.sub-icon{font-size:26px;margin-bottom:6px;}
+.sub-name{font-size:12px;font-weight:700;}
+.btn-lock{width:100%;padding:15px;border-radius:14px;border:none;background:var(--accent2);color:#fff;font-family:'DM Sans',sans-serif;font-weight:700;font-size:15px;cursor:pointer;transition:all .2s;margin-bottom:20px;}
+.btn-lock:disabled{opacity:.4;cursor:not-allowed;}
+.task-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:14px;border-left:4px solid var(--sub-color);}
+.task-item{display:flex;align-items:center;gap:12px;padding:11px 13px;border-radius:10px;margin-bottom:8px;cursor:pointer;border:1px solid var(--border);background:var(--bg3);transition:all .2s;}
+.task-item.done{background:#05260e;border-color:#16a34a33;}
+.task-check{width:22px;height:22px;border-radius:6px;border:2px solid var(--muted);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:12px;transition:all .2s;}
+.task-item.done .task-check{background:#16a34a;border-color:#16a34a;color:#fff;}
+.task-input{flex:1;padding:10px 14px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;}
+.task-input:focus{border-color:var(--accent);}
+.btn-add{padding:10px 16px;border-radius:10px;border:none;font-family:'DM Sans',sans-serif;font-weight:700;font-size:13px;cursor:pointer;color:#fff;}
+.btn-finish{width:100%;padding:16px;border-radius:14px;border:none;font-family:'DM Sans',sans-serif;font-weight:700;font-size:15px;cursor:pointer;transition:all .2s;margin-top:6px;}
+.titles-grid{display:flex;flex-wrap:wrap;gap:8px;}
+.title-pill{padding:6px 14px;border-radius:99px;font-size:12px;font-weight:700;border:1px solid var(--border);background:var(--bg3);color:var(--muted);}
+.title-pill.unlocked{color:var(--pill-color);background:color-mix(in srgb,var(--pill-color) 15%,var(--bg3));border-color:var(--pill-color);}
+.premium-banner{background:linear-gradient(135deg,#78350f,#92400e);border:1px solid var(--gold);border-radius:14px;padding:16px 18px;margin-bottom:16px;display:flex;align-items:center;gap:12px;}
+
+/* ── FEED ── */
+.feed-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:14px;border-left:4px solid var(--border);animation:fadeUp .3s ease forwards;}
+.feed-card.me{border-left-color:var(--accent2);}
+.feed-card.active-today{border-left-color:var(--accent);}
+.avatar{width:42px;height:42px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;position:relative;}
+.avatar.premium-av{box-shadow:0 0 0 2px var(--gold);}
+.pinned-msg{background:linear-gradient(135deg,#1e1b4b,#2d1b69);border:1px solid var(--accent2);border-radius:14px;padding:14px 16px;margin-bottom:14px;}
+
+/* ── BOARD ── */
+.board-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:16px 18px;margin-bottom:10px;display:flex;align-items:center;gap:14px;}
+.board-rank{font-family:'Bebas Neue',sans-serif;font-size:28px;width:36px;text-align:center;}
+
+/* ── STATS ── */
+.stats-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px;}
+.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.bar-label{font-size:12px;width:70px;color:var(--muted);}
+.bar-track{flex:1;height:8px;background:var(--bg3);border-radius:4px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:4px;transition:width .6s ease;}
+.bar-val{font-size:12px;font-family:'JetBrains Mono',monospace;font-weight:700;width:30px;text-align:right;}
+
+/* ── ADMIN ── */
+.admin-stat{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:14px 12px;text-align:center;}
+.admin-stat-num{font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--accent);line-height:1;}
+.admin-stat-label{font-size:11px;color:var(--muted);margin-top:3px;text-transform:uppercase;letter-spacing:.8px;}
+.admin-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;margin-bottom:14px;overflow:hidden;}
+.admin-card-header{padding:16px 18px;display:flex;align-items:center;gap:12px;cursor:pointer;}
+.admin-card-header:hover{background:var(--bg3);}
+.admin-card-body{padding:0 18px 16px;display:none;border-top:1px solid var(--border);}
+.admin-card-body.open{display:block;}
+.admin-detail-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;}
+.admin-detail-row:last-child{border-bottom:none;}
+.admin-detail-label{color:var(--muted);}
+.admin-detail-val{font-weight:600;font-family:'JetBrains Mono',monospace;font-size:12px;}
+.admin-btn{padding:8px 14px;border-radius:10px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:12px;cursor:pointer;border:1px solid var(--border);background:var(--bg3);color:var(--text);transition:all .15s;}
+.admin-btn:hover{filter:brightness(1.2);}
+.admin-btn.danger{background:#7f1d1d;color:#fca5a5;border-color:#dc2626;}
+.admin-btn.gold{background:#78350f;color:#fde68a;border-color:#d97706;}
+.admin-btn.purple{background:#1e1b4b;color:#c4b5fd;border-color:#7c3aed;}
+
+/* ── TOAST ── */
+#toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);z-index:999;opacity:0;transition:all .3s;pointer-events:none;background:var(--bg2);border:1px solid var(--border);padding:12px 22px;border-radius:14px;font-size:14px;font-weight:600;white-space:nowrap;box-shadow:0 8px 32px #00000066;}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+#toast.ok{border-color:#16a34a66;color:#4ade80;}
+#toast.err{border-color:#dc262666;color:#fca5a5;}
+
+/* ── LOADER ── */
+#loader{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;}
+.loader-logo{font-family:'Bebas Neue',sans-serif;font-size:60px;letter-spacing:3px;}
+.loader-logo span{color:var(--accent);}
+.loader-spin{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;}
+
+/* ── INSTALL ── */
+#installBanner{position:fixed;bottom:80px;left:16px;right:16px;z-index:200;background:var(--bg2);border:1px solid var(--accent2);border-radius:16px;padding:14px 18px;display:none;align-items:center;gap:12px;box-shadow:0 8px 32px #7c3aed33;}
+#installBanner.show{display:flex;}
+.install-text{flex:1;font-size:13px;font-weight:600;}
+.install-text small{display:block;color:var(--muted);font-weight:400;font-size:11px;margin-top:2px;}
+.btn-install{padding:9px 18px;background:var(--accent2);color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:13px;cursor:pointer;}
+
+/* ── SHIELD ── */
+.shield-badge{display:inline-flex;align-items:center;gap:5px;background:#1e3a5f;border:1px solid #3b82f6;border-radius:99px;padding:4px 10px;font-size:12px;font-weight:700;color:#60a5fa;}
+</style>
+</head>
+<body>
+
+<!-- LOADER -->
+<div id="loader"><div class="loader-logo"><span>JEE</span>GRIND</div><div class="loader-spin"></div></div>
+
+<!-- AUTH SCREEN -->
+<div id="authScreen" class="screen">
+  <div class="auth-bg"></div>
+  <div class="auth-logo"><span>JEE</span>GRIND 🔥</div>
+  <p class="auth-tagline">Your squad. Your streak. Your IIT dream.</p>
+  <div class="auth-card">
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchTab('signup')">Sign Up</button>
+      <button class="auth-tab" onclick="switchTab('login')">Log In</button>
+    </div>
+    <div id="authError" class="auth-error"></div>
+    <div id="signupForm">
+      <div class="form-group"><label class="form-label">Display Name</label><input class="form-input" id="signupName" type="text" placeholder="e.g. Arjun, Priya…" maxlength="20"/></div>
+      <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="signupEmail" type="email" placeholder="you@example.com"/></div>
+      <div class="form-group"><label class="form-label">Password</label><input class="form-input" id="signupPass" type="password" placeholder="Min. 6 characters"/></div>
+      <button class="btn-primary" id="signupBtn" onclick="doSignup()">Create Account →</button>
+    </div>
+    <div id="loginForm" style="display:none">
+      <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="loginEmail" type="email" placeholder="you@example.com"/></div>
+      <div class="form-group"><label class="form-label">Password</label><input class="form-input" id="loginPass" type="password" placeholder="Your password"/></div>
+      <button class="btn-primary" id="loginBtn" onclick="doLogin()">Log In →</button>
+    </div>
+  </div>
+</div>
+
+<!-- OATH SCREEN -->
+<div id="oathScreen" class="screen">
+  <div class="oath-bg"></div>
+  <div class="oath-card">
+    <span class="oath-flame">🔥</span>
+    <div class="oath-title">THE GRINDER'S OATH</div>
+    <p style="color:var(--muted);font-size:13px;margin-bottom:20px">Before you begin, make a promise — to yourself.</p>
+    <div class="oath-text">
+      I am not here to waste time. I am not here to fake tasks, inflate streaks, or earn credits through shortcuts.<br><br>
+      <strong>Every task I mark done, I have truly done.</strong> Every subject I choose, I will genuinely study. My streak reflects my real effort — nothing less.<br><br>
+      I understand that <strong>IIT is not won by looking busy — it is won by being relentless.</strong> My squad is watching. More importantly, <strong>my future self is watching.</strong><br><br>
+      From this day forward, I choose consistency over excuses, discipline over comfort, and truth over shortcuts.<br><br>
+      <strong>This app is my witness. My dream is my reason. IIT is my destination. 🎯</strong>
+    </div>
+    <label class="oath-check" id="oathCheckLabel">
+      <input type="checkbox" id="oathCheck" onchange="updateOathBtn()"/>
+      <span>I have read and accept this oath. I will be honest with my tasks and consistent in my efforts.</span>
+    </label>
+    <button class="btn-oath" id="oathBtn" disabled onclick="completeOath()">🤝 I Swear On My Dream</button>
+  </div>
+</div>
+
+<!-- APP SCREEN -->
+<div id="appScreen" class="screen">
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-logo"><span>JEE</span>GRIND</div>
+    <div class="topbar-right">
+      <div class="stat-pill" id="streakPill">🔥 0d</div>
+      <div class="stat-pill" id="creditsPill">⚡ 0</div>
+      <button class="hamburger-btn" onclick="openMenu()">☰</button>
+    </div>
+  </div>
+
+  <!-- BROADCAST BANNER -->
+  <div id="broadcastBanner"><span id="broadcastText"></span><button class="broadcast-close" onclick="closeBroadcast()">×</button></div>
+
+  <!-- PAGES -->
+  <!-- HOME -->
+  <div class="page active" id="homePage">
+    <div class="title-banner" id="titleBanner">
+      <div id="titleEmoji" style="font-size:36px">😴</div>
+      <div style="flex:1"><div id="titleName" style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:1px;line-height:1">SLEEPER</div><div id="titleSub" style="font-size:12px;color:var(--muted);margin-top:2px">Start your streak!</div></div>
+      <div class="streak-badge" id="streakBadge">0 days</div>
+    </div>
+    <div id="premiumHomeBanner" style="display:none" class="premium-banner">
+      <span style="font-size:28px">👑</span>
+      <div><div style="font-weight:800;color:var(--gold)">Premium Active</div><div style="font-size:12px;color:#fde68a;margin-top:2px">2x credits • Streak Shield • Exclusive titles</div></div>
+      <div id="shieldStatus" style="margin-left:auto"></div>
+    </div>
+    <div id="pickSection">
+      <div class="section-title">Choose 2 subjects for today</div>
+      <div class="sub-grid">
+        <div class="sub-card" id="subMaths" style="--sel-color:var(--math)" onclick="toggleSub('Maths')"><div class="sub-icon">∑</div><div class="sub-name" style="color:var(--math)">Maths</div></div>
+        <div class="sub-card" id="subPhysics" style="--sel-color:var(--phys)" onclick="toggleSub('Physics')"><div class="sub-icon">⚛️</div><div class="sub-name" style="color:var(--phys)">Physics</div></div>
+        <div class="sub-card" id="subChemistry" style="--sel-color:var(--chem)" onclick="toggleSub('Chemistry')"><div class="sub-icon">⚗️</div><div class="sub-name" style="color:var(--chem)">Chemistry</div></div>
+      </div>
+      <button class="btn-lock" id="lockSubBtn" disabled onclick="lockSubjects()">🔒 Lock Subjects & Start</button>
+    </div>
+    <div id="tasksSection" style="display:none"></div>
+    <div style="margin-top:20px"><div class="section-title">Title Journey</div><div class="titles-grid" id="titlesGrid"></div></div>
+  </div>
+
+  <!-- FEED -->
+  <div class="page" id="feedPage">
+    <div class="section-title" style="margin-bottom:16px">Squad Feed — Today</div>
+    <div id="pinnedSection"></div>
+    <div id="feedList"></div>
+  </div>
+
+  <!-- LEADERBOARD -->
+  <div class="page" id="boardPage">
+    <div class="section-title">Weekly Leaderboard 🏆</div>
+    <p style="color:var(--muted);font-size:12px;margin-bottom:20px">Resets Monday • +10⚡ task • +20⚡ streak bonus • 👑 2x for Premium</p>
+    <div id="boardList"></div>
+  </div>
+
+  <!-- STATS (premium) -->
+  <div class="page" id="statsPage">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">
+      <span style="font-size:24px">📊</span>
+      <div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px">My Stats</div>
+        <div style="font-size:12px;color:var(--gold)">👑 Premium Feature</div>
+      </div>
+    </div>
+    <div id="statsContent"></div>
+  </div>
+
+  <!-- ADMIN -->
+  <div class="page" id="adminPage">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:1px;margin-bottom:4px">👑 Admin Panel</div>
+    <p style="color:var(--muted);font-size:12px;margin-bottom:16px">Full control over squad</p>
+    <div id="adminStats" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px"></div>
+    <!-- Broadcast -->
+    <div style="background:#1a1a2e;border:1px solid var(--accent2);border-radius:14px;padding:16px;margin-bottom:16px">
+      <div class="section-title" style="margin-bottom:10px">📢 Broadcast Message</div>
+      <input class="form-input" id="broadcastInput" placeholder="Type a message to all users…" style="margin-bottom:10px"/>
+      <div style="display:flex;gap:8px">
+        <button class="admin-btn purple" onclick="sendBroadcast()" style="flex:1">📢 Send to All</button>
+        <button class="admin-btn" onclick="clearBroadcast()">Clear</button>
+      </div>
+    </div>
+    <!-- Bug reports -->
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:16px">
+      <div class="section-title" style="margin-bottom:10px">🐛 Bug Reports</div>
+      <div id="bugReportsList"><p style="color:var(--muted);font-size:13px">Loading…</p></div>
+    </div>
+    <!-- Nuke buttons -->
+    <div style="background:#1a0a0a;border:1px solid #7f1d1d;border-radius:14px;padding:16px;margin-bottom:16px">
+      <div class="section-title" style="color:#ef4444;margin-bottom:12px">⚠️ Global Controls</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px">
+        <button class="admin-btn danger" onclick="adminResetAllCredits()">🗑️ Reset ALL Credits</button>
+        <button class="admin-btn danger" onclick="adminResetAllStreaks()">🔥 Reset ALL Streaks</button>
+        <button class="admin-btn purple" onclick="adminClearAllToday()">📅 Clear Today's Data</button>
+      </div>
+    </div>
+    <div class="section-title" style="margin-bottom:12px">All Members</div>
+    <div id="adminList"></div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <nav class="nav">
+    <button class="nav-btn active" id="navHome" onclick="switchPage('home')"><span class="nav-icon">📅</span>My Day</button>
+    <button class="nav-btn" id="navFeed" onclick="switchPage('feed')"><span class="nav-icon">👥</span>Squad</button>
+    <button class="nav-btn" id="navBoard" onclick="switchPage('board')"><span class="nav-icon">🏆</span>Ranks</button>
+    <button class="nav-btn" id="navStats" style="display:none" onclick="switchPage('stats')"><span class="nav-icon">📊</span>Stats</button>
+    <button class="nav-btn" id="navAdmin" style="display:none" onclick="switchPage('admin')"><span class="nav-icon">👑</span>Admin</button>
+  </nav>
+</div>
+
+<!-- SIDE MENU -->
+<div class="menu-overlay" id="menuOverlay" onclick="closeMenu()"></div>
+<div class="side-menu" id="sideMenu">
+  <div class="menu-header">
+    <div class="menu-avatar-big" id="menuAvatarBig" style="background:var(--bg3)">😊</div>
+    <div>
+      <div class="menu-user-name" id="menuUserName">Loading…</div>
+      <div class="menu-user-email" id="menuUserEmail"></div>
+      <div id="menuPremiumBadge" style="display:none" class="menu-premium-badge">👑 PREMIUM</div>
+    </div>
+  </div>
+  <div class="menu-section">Account</div>
+  <button class="menu-item" onclick="openProfileModal()"><span class="menu-item-icon">👤</span><span class="menu-item-label">Edit Profile</span></button>
+  <div class="menu-section">Preferences</div>
+  <button class="menu-item" onclick="toggleTheme()"><span class="menu-item-icon" id="themeIcon">🌙</span><span class="menu-item-label" id="themeLabel">Light Mode</span></button>
+  <div class="menu-section">Support</div>
+  <button class="menu-item" onclick="openBugModal()"><span class="menu-item-icon">🐛</span><span class="menu-item-label">Bug Report / Support</span></button>
+  <div class="menu-divider"></div>
+  <button class="menu-item premium-item" id="premiumMenuItem" onclick="openPremiumModal()"><span class="menu-item-icon">💎</span><span class="menu-item-label">Upgrade to Premium</span><span class="menu-item-badge">₹29</span></button>
+  <div class="menu-divider"></div>
+  <button class="menu-item danger" onclick="doLogout()"><span class="menu-item-icon">🚪</span><span class="menu-item-label">Log Out</span></button>
+  <div style="padding:20px;margin-top:auto">
+    <p style="font-size:11px;color:var(--muted);text-align:center">JEEGrind v2.0 • Made for IIT Aspirants 🎯</p>
+  </div>
+</div>
+
+<!-- PROFILE MODAL -->
+<div class="modal-overlay" id="profileModal">
+  <div class="modal">
+    <div class="modal-title">👤 Edit Profile <button class="modal-close" onclick="closeModal('profileModal')">×</button></div>
+    <div class="section-title" style="margin-bottom:10px">Choose Avatar</div>
+    <div class="emoji-grid" id="emojiGrid"></div>
+    <div class="form-group"><label class="form-label">Display Name</label><input class="form-input" id="profileName" type="text" maxlength="20"/></div>
+    <div class="form-group"><label class="form-label">New Password (leave blank to keep)</label><input class="form-input" id="profilePass" type="password" placeholder="New password…"/></div>
+    <div style="display:flex;gap:10px;margin-top:4px">
+      <button class="btn-modal secondary" onclick="closeModal('profileModal')" style="flex:1">Cancel</button>
+      <button class="btn-modal primary" onclick="saveProfile()" style="flex:1">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- BUG MODAL -->
+<div class="modal-overlay" id="bugModal">
+  <div class="modal">
+    <div class="modal-title">🐛 Bug Report / Support <button class="modal-close" onclick="closeModal('bugModal')">×</button></div>
+    <div class="form-group"><label class="form-label">What's the issue?</label><textarea class="form-input" id="bugText" rows="4" placeholder="Describe the bug or your question…" style="resize:none"></textarea></div>
+    <div style="display:flex;gap:10px">
+      <button class="btn-modal secondary" onclick="closeModal('bugModal')" style="flex:1">Cancel</button>
+      <button class="btn-modal primary" onclick="submitBug()" style="flex:1">Submit</button>
+    </div>
+  </div>
+</div>
+
+<!-- PREMIUM MODAL -->
+<div class="modal-overlay" id="premiumModal">
+  <div class="modal">
+    <div class="modal-title">💎 Premium <button class="modal-close" onclick="closeModal('premiumModal')">×</button></div>
+    <div style="background:linear-gradient(135deg,#78350f,#92400e);border:1px solid var(--gold);border-radius:14px;padding:20px;margin-bottom:20px;text-align:center">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:48px;color:var(--gold)">₹29</div>
+      <div style="font-size:13px;color:#fde68a">One-time payment • Lifetime access</div>
+    </div>
+    <div style="margin-bottom:20px">
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);font-size:14px">👑 Gold crown badge next to your name</div>
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);font-size:14px">🛡️ Streak Shield — 1 free freeze/week</div>
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);font-size:14px">📊 Personal Stats Dashboard</div>
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);font-size:14px">⚡ 2x Credits on every task</div>
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);font-size:14px">📌 Pin a message in Squad Feed</div>
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);font-size:14px">🎨 Exclusive premium titles</div>
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 0;font-size:14px">🏷️ JEE Warrior, Sigma Grinder &amp; more</div>
+    </div>
+    <div style="background:var(--bg3);border-radius:12px;padding:14px;text-align:center;margin-bottom:16px">
+      <p style="font-size:13px;color:var(--muted)">Send ₹29 to UPI: <strong style="color:var(--text)">jeegrind@upi</strong> and share payment screenshot with your admin (Priya) to get activated!</p>
+    </div>
+    <button class="btn-modal primary" style="width:100%" onclick="closeModal('premiumModal')">Got it!</button>
+  </div>
+</div>
+
+<!-- PINNED MSG MODAL (premium) -->
+<div class="modal-overlay" id="pinnedModal">
+  <div class="modal">
+    <div class="modal-title">📌 Pin a Message <button class="modal-close" onclick="closeModal('pinnedModal')">×</button></div>
+    <div class="form-group"><label class="form-label">Your pinned message (visible to squad)</label><input class="form-input" id="pinnedInput" type="text" maxlength="100" placeholder="e.g. Let's crack IIT 2027! 🚀"/></div>
+    <div style="display:flex;gap:10px">
+      <button class="btn-modal secondary" onclick="closeModal('pinnedModal')" style="flex:1">Cancel</button>
+      <button class="btn-modal primary" onclick="savePinnedMsg()" style="flex:1">Pin It 📌</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- INSTALL BANNER -->
+<div id="installBanner">
+  <div class="install-text">Add to Home Screen<small>Works like a real app!</small></div>
+  <button class="btn-install" onclick="installApp()">Install</button>
+  <button style="background:transparent;border:none;color:var(--muted);font-size:20px;cursor:pointer" onclick="dismissInstall()">×</button>
+</div>
+
+<script>
+setTimeout(function(){
+  var l=document.getElementById("loader");
+  if(l&&l.style.display!=="none"){
+    l.style.display="none";
+    var a=document.getElementById("authScreen");
+    if(a){a.style.display="flex";a.classList.add("active");}
+  }
+},5000);
+</script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updatePassword } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc, getDocFromServer, collection, getDocs, onSnapshot, updateDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBX5yETDzXDKi6LQVzDR66oTlK1q6euIXo",
+  authDomain: "jeegrind-190fd.firebaseapp.com",
+  projectId: "jeegrind-190fd",
+  storageBucket: "jeegrind-190fd.firebasestorage.app",
+  messagingSenderId: "893595283056",
+  appId: "1:893595283056:web:92328e988b2c2b22068eb5"
+};
+const app  = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db   = getFirestore(app);
+
+// ── CONSTANTS ──
+const ADMIN_EMAIL = "foraionly1234@gmail.com";
+const TITLES = [
+  {days:0,  label:"SLEEPER",     emoji:"😴",color:"#6b7280"},
+  {days:1,  label:"STARTER",     emoji:"✏️", color:"#60a5fa"},
+  {days:3,  label:"GRINDER",     emoji:"⚡", color:"#34d399"},
+  {days:7,  label:"CONSISTENT",  emoji:"🔥",color:"#fbbf24"},
+  {days:14, label:"BEAST MODE",  emoji:"💪",color:"#f97316"},
+  {days:30, label:"UNSTOPPABLE", emoji:"🚀",color:"#a78bfa"},
+  {days:60, label:"LEGEND",      emoji:"🏆",color:"#f43f5e"},
+  {days:100,label:"GODLIKE",     emoji:"☠️",color:"#e11d48"},
+];
+const PREMIUM_TITLES = [
+  {days:0, label:"JEE WARRIOR",    emoji:"👹",color:"#ef4444"},
+  {days:7, label:"SIGMA GRINDER",  emoji:"💀",color:"#8b5cf6"},
+  {days:30,label:"IIT BOUND",      emoji:"🎯",color:"#f59e0b"},
+];
+const AVATARS = ["😊","😎","🦁","🐯","🦊","🐺","🦅","🔥","⚡","💀","👾","🤖","🧠","💎","🏹","🎯","🚀","⚔️","🛡️","👑"];
+const SUB_COLOR = {Maths:"var(--math)",Physics:"var(--phys)",Chemistry:"var(--chem)"};
+const SUB_ICON  = {Maths:"∑",Physics:"⚛️",Chemistry:"⚗️"};
+
+// ── STATE ──
+let currentUser = null, userData = null, chosenSubs = [], unsubFeed = null, adminUsers = [], selectedAvatar = "😊";
+const todayStr = () => new Date().toISOString().slice(0,10);
+const weekKey  = () => { const d=new Date(),j=new Date(d.getFullYear(),0,1); return `${d.getFullYear()}-W${Math.ceil(((d-j)/86400000+j.getDay()+1)/7)}`; };
+const getTitle = (s,isPrem) => {
+  if(isPrem){ const pt=[...PREMIUM_TITLES].reverse().find(t=>s>=t.days); if(pt) return pt; }
+  return [...TITLES].reverse().find(t=>s>=t.days)||TITLES[0];
+};
+const isPremium = () => userData?.premium===true;
+
+// ── HELPERS ──
+function toast(msg,type="ok"){const el=document.getElementById("toast");el.textContent=msg;el.className=`show ${type}`;clearTimeout(el._t);el._t=setTimeout(()=>el.className="",2800);}
+function hideLoader(){document.getElementById("loader").style.display="none";}
+function showScreen(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));document.getElementById(id).classList.add("active");}
+function openModal(id){document.getElementById(id).classList.add("open");}
+function closeModal(id){document.getElementById(id).classList.remove("open");}
+window.closeModal = closeModal;
+
+// ── AUTH ──
+window.switchTab = (tab) => {
+  document.querySelectorAll(".auth-tab").forEach((t,i)=>t.classList.toggle("active",(i===0&&tab==="signup")||(i===1&&tab==="login")));
+  document.getElementById("signupForm").style.display=tab==="signup"?"block":"none";
+  document.getElementById("loginForm").style.display=tab==="login"?"block":"none";
+  document.getElementById("authError").style.display="none";
+};
+function showAuthError(msg){const el=document.getElementById("authError");el.textContent=msg;el.style.display="block";}
+
+window.doSignup = async()=>{
+  const name=document.getElementById("signupName").value.trim();
+  const email=document.getElementById("signupEmail").value.trim();
+  const pass=document.getElementById("signupPass").value;
+  if(!name)return showAuthError("Please enter a display name.");
+  if(!email)return showAuthError("Please enter your email.");
+  if(pass.length<6)return showAuthError("Password must be at least 6 characters.");
+  const btn=document.getElementById("signupBtn");btn.disabled=true;btn.textContent="Creating…";
+  try{
+    const cred=await createUserWithEmailAndPassword(auth,email,pass);
+    await setDoc(doc(db,"users",cred.user.uid),{name,email,avatar:"😊",streak:0,lastDate:null,credits:0,weekCredits:{},days:{},oathDone:false,premium:false,banned:false,pinnedMsg:"",shieldUsed:false,createdAt:serverTimestamp()});
+  }catch(e){showAuthError(friendlyError(e.code));btn.disabled=false;btn.textContent="Create Account →";}
+};
+
+window.doLogin = async()=>{
+  const email=document.getElementById("loginEmail").value.trim();
+  const pass=document.getElementById("loginPass").value;
+  if(!email||!pass)return showAuthError("Please fill in both fields.");
+  const btn=document.getElementById("loginBtn");btn.disabled=true;btn.textContent="Logging in…";
+  try{await signInWithEmailAndPassword(auth,email,pass);}
+  catch(e){showAuthError(friendlyError(e.code));btn.disabled=false;btn.textContent="Log In →";}
+};
+
+window.doLogout = async()=>{if(unsubFeed)unsubFeed();closeMenu();await signOut(auth);};
+function friendlyError(c){if(c==="auth/email-already-in-use")return"Email already registered.";if(c==="auth/invalid-email")return"Invalid email.";if(c==="auth/wrong-password"||c==="auth/invalid-credential")return"Wrong email or password.";if(c==="auth/too-many-requests")return"Too many attempts. Try later.";return"Something went wrong.";}
+
+// ── OATH ──
+window.updateOathBtn = ()=>{document.getElementById("oathBtn").disabled=!document.getElementById("oathCheck").checked;};
+window.completeOath = async()=>{
+  await updateDoc(doc(db,"users",currentUser.uid),{oathDone:true});
+  userData.oathDone=true;
+  showScreen("appScreen");
+  renderHome();startFeedListener();loadBroadcast();
+};
+
+// ── AUTH STATE ──
+onAuthStateChanged(auth,async(user)=>{
+  hideLoader();
+  if(!user){showScreen("authScreen");return;}
+  currentUser=user;
+  const snap=await getDoc(doc(db,"users",user.uid));
+  if(!snap.exists()){showScreen("authScreen");return;}
+  userData=snap.data();
+  if(userData.banned){await signOut(auth);showScreen("authScreen");showAuthError("Your account has been banned. Contact admin.");return;}
+  // show admin/stats nav
+  if(user.email===ADMIN_EMAIL){document.getElementById("navAdmin").style.display="flex";}
+  if(userData.premium){document.getElementById("navStats").style.display="flex";}
+  // theme
+  if(localStorage.getItem("theme")==="light")document.body.classList.add("light");
+  // oath
+  if(!userData.oathDone){showScreen("oathScreen");return;}
+  showScreen("appScreen");
+  renderHome();startFeedListener();loadBroadcast();
+  updateMenuHeader();
+});
+
+// ── SAVE ──
+async function saveUser(){await setDoc(doc(db,"users",currentUser.uid),userData,{merge:true});}
+
+// ── MENU ──
+window.openMenu  = ()=>{document.getElementById("menuOverlay").classList.add("open");document.getElementById("sideMenu").classList.add("open");updateMenuHeader();};
+window.closeMenu = ()=>{document.getElementById("menuOverlay").classList.remove("open");document.getElementById("sideMenu").classList.remove("open");};
+function updateMenuHeader(){
+  if(!userData)return;
+  const av=userData.avatar||"😊";
+  const mbig=document.getElementById("menuAvatarBig");
+  mbig.textContent=av;mbig.style.background=isPremium()?"#78350f22":"var(--bg3)";
+  if(isPremium())mbig.classList.add("premium");
+  document.getElementById("menuUserName").textContent=userData.name||"";
+  document.getElementById("menuUserEmail").textContent=currentUser?.email||"";
+  document.getElementById("menuPremiumBadge").style.display=isPremium()?"inline-block":"none";
+  document.getElementById("premiumMenuItem").style.display=isPremium()?"none":"flex";
+  document.getElementById("navStats").style.display=isPremium()?"flex":"none";
+}
+
+// ── THEME ──
+window.toggleTheme = ()=>{
+  document.body.classList.toggle("light");
+  const isLight=document.body.classList.contains("light");
+  localStorage.setItem("theme",isLight?"light":"dark");
+  document.getElementById("themeIcon").textContent=isLight?"☀️":"🌙";
+  document.getElementById("themeLabel").textContent=isLight?"Dark Mode":"Light Mode";
+};
+
+// ── PROFILE ──
+window.openProfileModal = ()=>{
+  closeMenu();
+  const grid=document.getElementById("emojiGrid");
+  selectedAvatar=userData?.avatar||"😊";
+  grid.innerHTML=AVATARS.map(e=>`<div class="emoji-opt${e===selectedAvatar?" selected":""}" onclick="selectAvatar('${e}')">${e}</div>`).join("");
+  document.getElementById("profileName").value=userData?.name||"";
+  document.getElementById("profilePass").value="";
+  openModal("profileModal");
+};
+window.selectAvatar = (e)=>{selectedAvatar=e;document.querySelectorAll(".emoji-opt").forEach(el=>el.classList.toggle("selected",el.textContent===e));};
+window.saveProfile = async()=>{
+  const name=document.getElementById("profileName").value.trim();
+  const pass=document.getElementById("profilePass").value;
+  if(!name)return toast("Name can't be empty","err");
+  userData.name=name;userData.avatar=selectedAvatar;
+  if(pass.length>=6){try{await updatePassword(currentUser,pass);}catch(e){toast("Re-login required to change password","err");}}
+  else if(pass.length>0&&pass.length<6){return toast("Password must be 6+ chars","err");}
+  await saveUser();
+  updateMenuHeader();closeModal("profileModal");toast("Profile updated! ✓");renderHome();
+};
+
+// ── BUG REPORT ──
+window.openBugModal = ()=>{closeMenu();openModal("bugModal");};
+window.submitBug = async()=>{
+  const text=document.getElementById("bugText").value.trim();
+  if(!text)return toast("Please describe the issue","err");
+  await setDoc(doc(db,"bugs",`${currentUser.uid}_${Date.now()}`),{uid:currentUser.uid,name:userData.name,email:currentUser.email,text,createdAt:serverTimestamp(),read:false});
+  document.getElementById("bugText").value="";closeModal("bugModal");toast("Report sent! Admin will check it 🐛");
+};
+
+// ── PREMIUM MODAL ──
+window.openPremiumModal = ()=>{closeMenu();openModal("premiumModal");};
+
+// ── PINNED MSG ──
+window.openPinnedModal = ()=>openModal("pinnedModal");
+window.savePinnedMsg = async()=>{
+  const msg=document.getElementById("pinnedInput").value.trim();
+  userData.pinnedMsg=msg;await saveUser();closeModal("pinnedModal");toast("Message pinned! 📌");
+};
+
+// ── BROADCAST ──
+async function loadBroadcast(){
+  try{
+    const snap=await getDoc(doc(db,"config","broadcast"));
+    if(snap.exists()&&snap.data().msg){showBroadcast(snap.data().msg);}
+  }catch(e){}
+}
+function showBroadcast(msg){
+  const b=document.getElementById("broadcastBanner");
+  document.getElementById("broadcastText").textContent="📢 "+msg;
+  b.classList.add("show");
+  document.querySelectorAll(".page").forEach(p=>p.style.paddingTop="110px");
+}
+window.closeBroadcast = ()=>{
+  document.getElementById("broadcastBanner").classList.remove("show");
+  document.querySelectorAll(".page").forEach(p=>p.style.paddingTop="");
+};
+window.sendBroadcast = async()=>{
+  const msg=document.getElementById("broadcastInput").value.trim();
+  if(!msg)return toast("Type a message first","err");
+  await setDoc(doc(db,"config","broadcast"),{msg,by:userData.name,at:serverTimestamp()});
+  toast("Broadcast sent! 📢");showBroadcast(msg);
+};
+window.clearBroadcast = async()=>{
+  await setDoc(doc(db,"config","broadcast"),{msg:""});
+  closeBroadcast();toast("Broadcast cleared");
+};
+
+// ── HOME ──
+function renderHome(){
+  const streak=userData.streak||0;
+  const prem=isPremium();
+  const t=getTitle(streak,prem);
+  document.getElementById("titleEmoji").textContent=t.emoji;
+  document.getElementById("titleName").textContent=t.label;
+  document.getElementById("titleSub").textContent=streak===0?"Start your streak!":`${streak} day streak!`;
+  document.getElementById("titleBanner").style.borderColor=t.color;
+  document.getElementById("streakBadge").textContent=`${streak} days`;
+  document.getElementById("streakPill").textContent=`🔥 ${streak}d`;
+  document.getElementById("creditsPill").textContent=`⚡ ${userData.credits||0}`;
+  document.getElementById("premiumHomeBanner").style.display=prem?"flex":"none";
+  if(prem){
+    const shieldUsed=userData.shieldUsed||false;
+    document.getElementById("shieldStatus").innerHTML=shieldUsed?'<span class="shield-badge">🛡️ Shield Used</span>':'<span class="shield-badge">🛡️ Shield Ready</span>';
+  }
+  // titles
+  const allTitles=[...TITLES,...(prem?PREMIUM_TITLES:[])];
+  document.getElementById("titlesGrid").innerHTML=allTitles.map(tt=>{
+    const unlocked=streak>=tt.days;
+    return `<div class="title-pill${unlocked?" unlocked":""}" style="--pill-color:${tt.color}">${tt.emoji} ${tt.label} <span style="opacity:.5;font-size:10px">${tt.days}d</span></div>`;
+  }).join("");
+  const today=todayStr();const dayEntry=userData.days?.[today];
+  if(!dayEntry){chosenSubs=[];document.getElementById("pickSection").style.display="block";document.getElementById("tasksSection").style.display="none";updateSubCards();}
+  else{document.getElementById("pickSection").style.display="none";document.getElementById("tasksSection").style.display="block";renderTasks(dayEntry);}
+}
+
+window.toggleSub=(sub)=>{if(chosenSubs.includes(sub)){chosenSubs=chosenSubs.filter(s=>s!==sub);}else if(chosenSubs.length<2){chosenSubs.push(sub);}updateSubCards();};
+function updateSubCards(){
+  ["Maths","Physics","Chemistry"].forEach(s=>{const card=document.getElementById(`sub${s}`);const sel=chosenSubs.includes(s);const full=chosenSubs.length===2&&!sel;card.classList.toggle("selected",sel);card.classList.toggle("disabled",full);});
+  document.getElementById("lockSubBtn").disabled=chosenSubs.length!==2;
+}
+window.lockSubjects=async()=>{
+  if(chosenSubs.length!==2)return;
+  const today=todayStr();const subjects={};chosenSubs.forEach(s=>{subjects[s]={tasks:[]};});
+  if(!userData.days)userData.days={};
+  userData.days[today]={selectedSubs:[...chosenSubs],subjects,finished:false};
+  await saveUser();renderHome();toast("Subjects locked! Add your tasks 📝");
+};
+
+function renderTasks(dayEntry){
+  const ts=document.getElementById("tasksSection");const finished=dayEntry.finished;const prem=isPremium();
+  let html="";
+  if(prem&&userData.pinnedMsg){html+=`<div style="background:#1e1b4b22;border:1px solid var(--accent2);border-radius:12px;padding:12px 14px;margin-bottom:14px;font-size:13px"><span style="color:var(--accent2);font-weight:700">📌 Your pinned msg: </span>${userData.pinnedMsg} <button onclick="openPinnedModal()" style="background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:12px;margin-left:6px">edit</button></div>`;}
+  else if(prem){html+=`<button onclick="openPinnedModal()" style="width:100%;padding:10px;border-radius:10px;border:1px dashed var(--accent2);background:transparent;color:var(--accent2);font-family:'DM Sans',sans-serif;font-weight:600;font-size:13px;cursor:pointer;margin-bottom:14px">📌 Pin a message for your squad</button>`;}
+  dayEntry.selectedSubs.forEach(sub=>{
+    const tasks=dayEntry.subjects[sub]?.tasks||[];const done=tasks.filter(t=>t.done).length;
+    const colVar=sub==="Maths"?"var(--math)":sub==="Physics"?"var(--phys)":"var(--chem)";
+    html+=`<div class="task-card" style="--sub-color:${colVar}">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+        <span style="font-size:20px">${SUB_ICON[sub]}</span>
+        <span style="font-weight:700;font-size:15px;flex:1">${sub}</span>
+        <span style="background:${colVar}22;color:${colVar};font-size:12px;font-weight:700;padding:3px 9px;border-radius:99px">${done}/${tasks.length}</span>
+        ${prem?`<span style="font-size:10px;color:var(--gold);font-weight:700">2x⚡</span>`:""}
+      </div>
+      ${tasks.map((t,i)=>`<div class="task-item${t.done?" done":""}" onclick="${finished?"":"completeTask('"+sub+"',"+i+")"}">
+        <div class="task-check">${t.done?"✓":""}</div>
+        <span style="flex:1;font-size:14px;${t.done?"text-decoration:line-through;color:var(--muted)":""}">${t.text}</span>
+        ${t.done?`<span style="font-size:11px;color:#16a34a;font-weight:700;font-family:'JetBrains Mono',monospace">+${prem?20:10}⚡</span>`:""}
+      </div>`).join("")}
+      ${!finished?`<div style="display:flex;gap:8px;margin-top:10px">
+        <input class="task-input" id="inp_${sub}" placeholder="Add ${sub} objective…" onkeydown="if(event.key==='Enter')addTask('${sub}')"/>
+        <button class="btn-add" style="background:${colVar}" onclick="addTask('${sub}')">Add</button>
+      </div>`:""}
+    </div>`;
+  });
+  const allDone=dayEntry.selectedSubs.every(s=>(dayEntry.subjects[s]?.tasks||[]).length>0&&(dayEntry.subjects[s].tasks||[]).every(t=>t.done));
+  if(!finished){
+    html+=`<button class="btn-finish" onclick="finishDay()" style="background:${allDone?"#16a34a":"var(--bg3)"};color:${allDone?"#fff":"var(--muted)"};border:2px solid ${allDone?"#16a34a":"var(--border)"}">
+      ${allDone?"🏆 Lock Day & Claim +"+(isPremium()?40:20)+"⚡ Bonus":"Complete tasks to lock the day"}
+    </button>`;
+  }else{
+    html+=`<div style="text-align:center;padding:20px;background:#14532d22;border:1px solid #16a34a44;border-radius:14px;margin-top:8px">
+      <div style="font-size:32px">🏆</div>
+      <div style="font-weight:800;color:#4ade80;font-size:16px;margin-top:8px">Day Locked! Streak: ${userData.streak} 🔥</div>
+      <div style="color:var(--muted);font-size:12px;margin-top:4px">Come back tomorrow!</div>
+    </div>`;
+  }
+  ts.innerHTML=html;
+}
+
+window.addTask=async(sub)=>{
+  const inp=document.getElementById(`inp_${sub}`);const text=inp?.value?.trim();if(!text)return;
+  const today=todayStr();userData.days[today].subjects[sub].tasks.push({text,done:false});await saveUser();inp.value="";renderTasks(userData.days[today]);
+};
+window.completeTask=async(sub,idx)=>{
+  const today=todayStr();const task=userData.days[today].subjects[sub].tasks[idx];if(task.done)return;
+  task.done=true;const earned=isPremium()?20:10;
+  userData.credits=(userData.credits||0)+earned;const wk=weekKey();if(!userData.weekCredits)userData.weekCredits={};userData.weekCredits[wk]=(userData.weekCredits[wk]||0)+earned;
+  await saveUser();document.getElementById("creditsPill").textContent=`⚡ ${userData.credits}`;toast(`+${earned} credits!${isPremium()?" (2x👑)":""} 💪`);renderTasks(userData.days[today]);
+};
+window.finishDay=async()=>{
+  const today=todayStr();const entry=userData.days[today];if(!entry||entry.finished)return;
+  const anyDone=entry.selectedSubs.some(s=>entry.subjects[s]?.tasks?.some(t=>t.done));
+  if(!anyDone){toast("Complete at least 1 task first!","err");return;}
+  const last=userData.lastDate;const yest=new Date();yest.setDate(yest.getDate()-1);const yStr=yest.toISOString().slice(0,10);
+  let newStreak;
+  if(last===yStr||last===today){newStreak=(userData.streak||0)+1;}
+  else if(isPremium()&&!userData.shieldUsed&&userData.lastDate){newStreak=userData.streak;userData.shieldUsed=true;toast("🛡️ Streak Shield activated! Streak saved!");}
+  else{newStreak=1;}
+  entry.finished=true;userData.streak=newStreak;userData.lastDate=today;
+  const bonus=isPremium()?40:20;userData.credits=(userData.credits||0)+bonus;const wk=weekKey();if(!userData.weekCredits)userData.weekCredits={};userData.weekCredits[wk]=(userData.weekCredits[wk]||0)+bonus;
+  // reset shield weekly
+  if(isPremium()&&userData.shieldUsed&&last&&last<todayStr()){const lastWeek=new Date(last);lastWeek.setDate(lastWeek.getDate()+7);if(new Date()>=lastWeek)userData.shieldUsed=false;}
+  await saveUser();toast(`🏆 Day locked! Streak: ${newStreak} days! +${bonus}⚡`);renderHome();
+};
+
+// ── FEED ──
+function startFeedListener(){
+  if(unsubFeed)unsubFeed();
+  unsubFeed=onSnapshot(collection(db,"users"),snap=>{
+    const users=[];snap.forEach(d=>users.push({uid:d.id,...d.data()}));
+    renderFeed(users);renderBoard(users);renderBugReports();
+    const me=users.find(u=>u.uid===currentUser.uid);
+    if(me){userData=me;renderHome();updateMenuHeader();}
+  });
+}
+
+function renderFeed(users){
+  const today=todayStr();
+  const sorted=[...users].sort((a,b)=>(b.days?.[today]?1:0)-(a.days?.[today]?1:0));
+  const fl=document.getElementById("feedList");if(!fl)return;
+  // pinned msgs
+  const pinned=users.filter(u=>u.pinnedMsg&&u.premium);
+  document.getElementById("pinnedSection").innerHTML=pinned.map(u=>`
+    <div class="pinned-msg">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+        <span style="font-size:16px">📌</span>
+        <span style="font-size:13px;font-weight:700;color:var(--accent2)">${u.name} <span style="color:var(--gold)">👑</span></span>
+      </div>
+      <div style="font-size:14px">${u.pinnedMsg}</div>
+    </div>`).join("");
+
+  fl.innerHTML=sorted.map(u=>{
+    const isMe=u.uid===currentUser.uid;const de=u.days?.[today];const t=getTitle(u.streak||0,u.premium);const wkC=u.weekCredits?.[weekKey()]||0;
+    let status=`<span style="font-size:11px;background:#7f1d1d33;color:#ef4444;padding:4px 10px;border-radius:99px;font-family:'JetBrains Mono',monospace;font-weight:700">ABSENT</span>`;
+    if(de?.finished)status=`<span style="font-size:11px;background:#05260e;color:#4ade80;padding:4px 10px;border-radius:99px;font-family:'JetBrains Mono',monospace;font-weight:700">✓ LOCKED</span>`;
+    else if(de)status=`<span style="font-size:11px;background:#78350f33;color:#fbbf24;padding:4px 10px;border-radius:99px;font-family:'JetBrains Mono',monospace;font-weight:700">ACTIVE</span>`;
+    let tasksHtml="";
+    if(de){tasksHtml=de.selectedSubs.map(sub=>{const tasks=de.subjects[sub]?.tasks||[];const colVar=sub==="Maths"?"var(--math)":sub==="Physics"?"var(--phys)":"var(--chem)";return`<div style="margin-bottom:10px"><div style="font-size:12px;font-weight:700;color:${colVar};margin-bottom:6px">${SUB_ICON[sub]} ${sub}</div>${tasks.map(tk=>`<div style="display:flex;gap:8px;font-size:13px;color:${tk.done?"var(--muted)":"var(--text)"};text-decoration:${tk.done?"line-through":"none"};margin-bottom:4px"><span style="color:${tk.done?"#4ade80":"var(--muted)"}">${tk.done?"✓":"○"}</span>${tk.text}</div>`).join("")}</div>`;}).join("");}
+    return`<div class="feed-card${isMe?" me":""}${de?" active-today":""}">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:${de?14:0}px">
+        <div class="avatar${u.premium?" premium-av":""}" style="background:${isMe?"#7c3aed33":de?"#ff6b3522":"var(--bg3)"};color:${isMe?"#a78bfa":de?"#ff6b35":"var(--muted)"}">
+          ${u.avatar||u.name?.[0]?.toUpperCase()||"?"}
+          ${u.premium?`<span style="position:absolute;top:-6px;right:-6px;font-size:12px">👑</span>`:""}
+        </div>
+        <div style="flex:1">
+          <div style="font-weight:700;font-size:15px">${u.name||"Unknown"} ${isMe?'<span style="font-size:11px;color:var(--accent2)">(you)</span>':""}</div>
+          <div style="font-size:12px;color:${t.color};font-weight:600;margin-top:1px">${t.emoji} ${t.label} • 🔥${u.streak||0} • ⚡${wkC}</div>
+        </div>
+        ${status}
+      </div>
+      ${de?`<div style="font-size:11px;color:var(--muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:.8px">Studying: ${de.selectedSubs.join(" + ")}</div>${tasksHtml}`:""}
+    </div>`;
+  }).join("");
+}
+
+function renderBoard(users){
+  const wk=weekKey();const sorted=[...users].sort((a,b)=>(b.weekCredits?.[wk]||0)-(a.weekCredits?.[wk]||0));
+  const bl=document.getElementById("boardList");if(!bl)return;
+  const medals=["🥇","🥈","🥉"];
+  bl.innerHTML=sorted.map((u,i)=>{
+    const isMe=u.uid===currentUser.uid;const wkC=u.weekCredits?.[wk]||0;const t=getTitle(u.streak||0,u.premium);
+    return`<div class="board-card" style="${isMe?"border-color:var(--accent2)":""};${i===0?"background:color-mix(in srgb,var(--gold) 5%,var(--bg2))":""}">
+      <div class="board-rank" style="color:${i===0?"var(--gold)":i===1?"#94a3b8":i===2?"#cd7f32":"var(--muted)"}">${medals[i]||`#${i+1}`}</div>
+      <div class="avatar${u.premium?" premium-av":""}" style="background:${isMe?"#7c3aed33":"var(--bg3)"};color:${isMe?"#a78bfa":"var(--muted)"};width:38px;height:38px;font-size:18px;border-radius:11px">
+        ${u.avatar||u.name?.[0]?.toUpperCase()||"?"}
+        ${u.premium?`<span style="position:absolute;top:-6px;right:-6px;font-size:10px">👑</span>`:""}
+      </div>
+      <div style="flex:1">
+        <div style="font-weight:700;font-size:15px">${u.name||"Unknown"} ${isMe?'<span style="font-size:11px;color:var(--accent2)">(you)</span>':""}</div>
+        <div style="font-size:12px;color:${t.color};margin-top:1px">${t.emoji} ${t.label} • 🔥${u.streak||0}d</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-family:'JetBrains Mono',monospace;font-weight:700;font-size:20px;color:var(--accent)">⚡${wkC}</div>
+        <div style="font-size:10px;color:var(--muted)">this week</div>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+// ── STATS (PREMIUM) ──
+function renderStats(){
+  if(!isPremium()){document.getElementById("statsContent").innerHTML=`<div style="text-align:center;padding:40px"><div style="font-size:48px">💎</div><p style="color:var(--muted);margin-top:12px">Upgrade to Premium to unlock Stats!</p></div>`;return;}
+  const days=userData.days||{};const dayKeys=Object.keys(days).sort().slice(-14);
+  const subCount={Maths:0,Physics:0,Chemistry:0};const daysDone=dayKeys.filter(k=>days[k].finished).length;
+  dayKeys.forEach(k=>{(days[k].selectedSubs||[]).forEach(s=>{subCount[s]=(subCount[s]||0)+1;});});
+  const maxSub=Math.max(...Object.values(subCount),1);
+  const totalTasks=dayKeys.reduce((s,k)=>{let c=0;(days[k].selectedSubs||[]).forEach(sub=>{c+=(days[k].subjects?.[sub]?.tasks||[]).length;});return s+c;},0);
+  const doneTasks=dayKeys.reduce((s,k)=>{let c=0;(days[k].selectedSubs||[]).forEach(sub=>{c+=(days[k].subjects?.[sub]?.tasks||[]).filter(t=>t.done).length;});return s+c;},0);
+  document.getElementById("statsContent").innerHTML=`
+    <div class="stats-card">
+      <div class="section-title" style="margin-bottom:12px">Last 14 Days Overview</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:4px">
+        <div style="text-align:center"><div style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--accent)">${daysDone}</div><div style="font-size:11px;color:var(--muted)">Days Locked</div></div>
+        <div style="text-align:center"><div style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--gold)">${userData.streak||0}</div><div style="font-size:11px;color:var(--muted)">Current Streak</div></div>
+        <div style="text-align:center"><div style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--chem)">${doneTasks}</div><div style="font-size:11px;color:var(--muted)">Tasks Done</div></div>
+      </div>
+    </div>
+    <div class="stats-card">
+      <div class="section-title" style="margin-bottom:12px">Subject Focus (Last 14 Days)</div>
+      ${Object.entries(subCount).map(([sub,cnt])=>`
+        <div class="bar-row">
+          <div class="bar-label" style="color:${sub==="Maths"?"var(--math)":sub==="Physics"?"var(--phys)":"var(--chem)"}">${sub}</div>
+          <div class="bar-track"><div class="bar-fill" style="width:${Math.round(cnt/maxSub*100)}%;background:${sub==="Maths"?"var(--math)":sub==="Physics"?"var(--phys)":"var(--chem)"}"></div></div>
+          <div class="bar-val">${cnt}</div>
+        </div>`).join("")}
+    </div>
+    <div class="stats-card">
+      <div class="section-title" style="margin-bottom:12px">Activity (Last 14 Days)</div>
+      <div style="display:flex;gap:4px;flex-wrap:wrap">
+        ${dayKeys.map(k=>{const locked=days[k]?.finished;const active=days[k]&&!locked;return`<div title="${k}" style="width:28px;height:28px;border-radius:6px;background:${locked?"#16a34a":active?"#d97706":"var(--bg3)"};border:1px solid ${locked?"#16a34a55":active?"#d9780655":"var(--border)"};display:flex;align-items:center;justify-content:center;font-size:12px">${locked?"✓":active?"…":""}</div>`;}).join("")}
+      </div>
+      <div style="display:flex;gap:16px;margin-top:10px;font-size:11px;color:var(--muted)">
+        <span>🟩 Locked</span><span>🟨 Active</span><span>⬛ Absent</span>
+      </div>
+    </div>`;
+}
+
+// ── ADMIN ──
+function renderAdmin(){
+  if(!currentUser||currentUser.email!==ADMIN_EMAIL)return;
+  const al=document.getElementById("adminList");const as=document.getElementById("adminStats");
+  if(!al||!as)return;al.innerHTML=`<div style="text-align:center;padding:30px;color:var(--muted)">Loading…</div>`;
+  getDocs(collection(db,"users")).then(snap=>{
+    adminUsers=[];snap.forEach(d=>adminUsers.push({uid:d.id,...d.data()}));
+    const today=todayStr();const wk=weekKey();
+    const totalUsers=adminUsers.length;const activeToday=adminUsers.filter(u=>u.days?.[today]).length;const lockedToday=adminUsers.filter(u=>u.days?.[today]?.finished).length;
+    const totalCreds=adminUsers.reduce((s,u)=>s+(u.credits||0),0);
+    as.innerHTML=`
+      <div class="admin-stat"><div class="admin-stat-num">${totalUsers}</div><div class="admin-stat-label">Members</div></div>
+      <div class="admin-stat"><div class="admin-stat-num" style="color:var(--gold)">${activeToday}</div><div class="admin-stat-label">Active Today</div></div>
+      <div class="admin-stat"><div class="admin-stat-num" style="color:#4ade80">${lockedToday}</div><div class="admin-stat-label">Day Locked</div></div>
+    `;
+    al.innerHTML=adminUsers.sort((a,b)=>(b.credits||0)-(a.credits||0)).map((u,i)=>{
+      const t=getTitle(u.streak||0,u.premium);const de=u.days?.[today];const wkC=u.weekCredits?.[wk]||0;const allDays=Object.keys(u.days||{}).length;const isMe=u.uid===currentUser.uid;
+      let tasksHtml="";
+      if(de){tasksHtml=de.selectedSubs.map(sub=>{const tasks=de.subjects[sub]?.tasks||[];const done=tasks.filter(t=>t.done).length;const colVar=sub==="Maths"?"var(--math)":sub==="Physics"?"var(--phys)":"var(--chem)";return`<div style="margin-bottom:10px"><div style="font-size:12px;font-weight:700;color:${colVar};margin-bottom:6px">${SUB_ICON[sub]} ${sub} (${done}/${tasks.length})</div>${tasks.map(tk=>`<div style="display:flex;gap:8px;font-size:13px;color:${tk.done?"var(--muted)":"var(--text)"};text-decoration:${tk.done?"line-through":"none"};margin-bottom:4px;padding-left:4px"><span style="color:${tk.done?"#4ade80":"var(--muted)"}">${tk.done?"✓":"○"}</span>${tk.t
