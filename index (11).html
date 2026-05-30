@@ -1,0 +1,3348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta http-equiv="Expires" content="0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<meta name="theme-color" content="#0a0a12"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="JEEGrind"/>
+<title>JEEGrind</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet"/>
+<link rel="manifest" href="data:application/json,%7B%22name%22%3A%20%22JEEGrind%22%2C%20%22short_name%22%3A%20%22JEEGrind%22%2C%20%22start_url%22%3A%20%22.%22%2C%20%22display%22%3A%20%22standalone%22%2C%20%22background_color%22%3A%20%22%230a0a12%22%2C%20%22theme_color%22%3A%20%22%230a0a12%22%2C%20%22icons%22%3A%20%5B%7B%22src%22%3A%20%22https%3A//i.ibb.co/pBC2qGvc/jeegrind-icon-192-1.png%22%2C%20%22sizes%22%3A%20%22192x192%22%2C%20%22type%22%3A%20%22image/png%22%7D%2C%20%7B%22src%22%3A%20%22https%3A//i.ibb.co/gbjMxgZH/jeegrind-icon-512-1.png%22%2C%20%22sizes%22%3A%20%22512x512%22%2C%20%22type%22%3A%20%22image/png%22%7D%5D%7D"/>
+<link rel="apple-touch-icon" href="https://i.ibb.co/pBC2qGvc/jeegrind-icon-192-1.png"/>
+<style>
+:root {
+--bg: #0a0a12;
+--bg2: #12121f;
+--bg3: #1a1a2e;
+--border: #2a2a40;
+--text: #f0f0ff;
+--muted: #6b6b8a;
+--accent: #ff6b35;
+--accent2: #7c3aed;
+--math: #3b82f6;
+--phys: #06b6d4;
+--chem: #10b981;
+--gold: #f59e0b;
+}
+body.light { --bg: #f0f4ff; --bg2: #ffffff; --bg3: #e8eeff; --border: #c7d2fe; --text: #0a0a2e; --muted: #6b7280; }
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body {
+background: var(--bg);
+color: var(--text);
+font-family: 'DM Sans', sans-serif;
+min-height: 100vh;
+overflow-x: hidden;
+}
+/* scrollbar */
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+/* ── SCREENS ── */
+.screen { display: none; min-height: 100vh; }
+.screen.active { display: block; }
+/* ── AUTH SCREEN ── */
+#authScreen {
+display: none;
+min-height: 100vh;
+background: var(--bg);
+position: relative;
+overflow: hidden;
+}
+#authScreen.active { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; }
+.auth-bg {
+position: absolute; inset: 0; pointer-events: none;
+background: radial-gradient(ellipse 80% 60% at 50% -10%, #7c3aed22 0%, transparent 70%),
+radial-gradient(ellipse 60% 40% at 80% 100%, #ff6b3511 0%, transparent 60%);
+}
+.auth-logo {
+font-family: 'Bebas Neue', sans-serif;
+font-size: clamp(52px, 15vw, 80px);
+letter-spacing: 2px;
+line-height: 1;
+text-align: center;
+margin-bottom: 6px;
+position: relative;
+}
+.auth-logo span { color: var(--accent); }
+.auth-tagline {
+color: var(--muted);
+font-size: 13px;
+text-align: center;
+margin-bottom: 36px;
+letter-spacing: 0.5px;
+}
+.auth-card {
+background: var(--bg2);
+border: 1px solid var(--border);
+border-radius: 20px;
+padding: 28px 24px;
+width: 100%;
+max-width: 380px;
+position: relative;
+}
+.auth-tabs {
+display: flex;
+background: var(--bg3);
+border-radius: 12px;
+padding: 4px;
+margin-bottom: 24px;
+}
+.auth-tab {
+flex: 1; padding: 9px; border-radius: 9px; border: none;
+background: transparent; color: var(--muted); font-family: 'DM Sans', sans-serif;
+font-weight: 600; font-size: 14px; cursor: pointer; transition: all .2s;
+}
+.auth-tab.active { background: var(--accent); color: #fff; }
+.form-group { margin-bottom: 16px; }
+.form-label { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 7px; display: block; }
+.form-input {
+width: 100%; padding: 13px 16px; border-radius: 12px;
+border: 1px solid var(--border); background: var(--bg3);
+color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 15px;
+outline: none; transition: border-color .2s;
+}
+.form-input:focus { border-color: var(--accent); }
+.form-input::placeholder { color: var(--muted); }
+.btn-primary {
+width: 100%; padding: 14px; border-radius: 12px; border: none;
+background: var(--accent); color: #fff; font-family: 'DM Sans', sans-serif;
+font-weight: 700; font-size: 15px; cursor: pointer; transition: all .15s;
+margin-top: 4px;
+}
+.btn-primary:hover { filter: brightness(1.1); transform: translateY(-1px); }
+.btn-primary:active { transform: translateY(0); }
+.btn-primary:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+.auth-error {
+background: #7f1d1d33; border: 1px solid #dc262644; border-radius: 10px;
+padding: 10px 14px; font-size: 13px; color: #fca5a5; margin-bottom: 14px;
+display: none;
+}
+/* ── MAIN APP ── */
+#appScreen { display: none; flex-direction: column; }
+#appScreen.active { display: flex; }
+/* NAV */
+.nav {
+position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+background: var(--bg2); border-top: 1px solid var(--border);
+display: flex; padding: 8px 0 max(8px, env(safe-area-inset-bottom));
+}
+.nav-btn {
+flex: 1; display: flex; flex-direction: column; align-items: center;
+gap: 3px; border: none; background: transparent; color: var(--muted);
+font-family: 'DM Sans', sans-serif; font-size: 10px; font-weight: 600;
+cursor: pointer; padding: 6px 0; transition: color .2s; text-transform: uppercase; letter-spacing: 0.5px;
+}
+.nav-btn.active { color: var(--accent); }
+.nav-icon { font-size: 20px; line-height: 1; }
+/* TOP BAR */
+.topbar {
+position: fixed; top: 0; left: 0; right: 0; z-index: 99;
+background: var(--bg2); border-bottom: 1px solid var(--border);
+padding: 12px 18px; display: flex; align-items: center; justify-content: space-between;
+}
+.topbar-logo { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 1px; }
+.topbar-logo span { color: var(--accent); }
+.topbar-right { display: flex; align-items: center; gap: 10px; }
+.stat-pill {
+font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700;
+background: var(--bg3); border: 1px solid var(--border);
+padding: 5px 10px; border-radius: 99px; color: var(--text);
+}
+/* PAGE CONTENT */
+.page { display: none; padding: 80px 16px 90px; }
+.page.active { display: block; }
+/* ── COUNTDOWN ── */
+.countdown-card {
+border-radius: 18px;
+padding: 18px 20px 16px;
+margin-bottom: 16px;
+background: var(--bg2);
+border: 1px solid var(--border);
+position: relative;
+overflow: hidden;
+}
+.countdown-card::before {
+content: '';
+position: absolute;
+inset: 0;
+background:
+radial-gradient(ellipse 80% 60% at 0% 50%, #ff6b3514 0%, transparent 60%),
+radial-gradient(ellipse 60% 80% at 100% 50%, #7c3aed14 0%, transparent 60%);
+pointer-events: none;
+}
+.countdown-top {
+display: flex; align-items: center; justify-content: space-between;
+margin-bottom: 14px;
+}
+.countdown-label {
+font-family: 'Bebas Neue', sans-serif;
+font-size: 18px; letter-spacing: 1.5px; color: var(--accent);
+}
+.countdown-session {
+font-size: 10px; font-weight: 700; color: var(--muted);
+text-transform: uppercase; letter-spacing: .8px;
+background: var(--bg3); border: 1px solid var(--border);
+padding: 4px 10px; border-radius: 99px;
+}
+.countdown-blocks {
+display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;
+margin-bottom: 12px;
+}
+.cd-block {
+background: var(--bg3); border: 1px solid var(--border);
+border-radius: 12px; padding: 10px 4px 8px;
+text-align: center;
+}
+.cd-num {
+font-family: 'JetBrains Mono', monospace;
+font-size: clamp(22px, 6vw, 30px);
+font-weight: 700; line-height: 1;
+color: var(--text);
+}
+.cd-num.days { color: var(--accent); }
+.cd-unit {
+font-size: 9px; font-weight: 700; color: var(--muted);
+text-transform: uppercase; letter-spacing: 1px; margin-top: 4px;
+}
+.countdown-quote {
+font-size: 12px; color: var(--muted); text-align: center;
+font-style: italic; letter-spacing: 0.3px;
+}
+/* ── HOME PAGE ── */
+.section-title {
+font-size: 11px; font-weight: 700; color: var(--muted);
+text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 12px;
+}
+.title-banner {
+border-radius: 16px; padding: 18px 20px; margin-bottom: 16px;
+background: linear-gradient(135deg, var(--bg2) 0%, var(--bg3) 100%);
+border: 1px solid var(--border);
+display: flex; align-items: center; gap: 14px;
+}
+.title-emoji { font-size: 36px; }
+.title-info { flex: 1; }
+.title-name { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 1px; line-height: 1; }
+.title-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.streak-badge {
+font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700;
+background: var(--accent); color: #fff; padding: 6px 12px; border-radius: 10px;
+}
+/* subject pick */
+.sub-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
+.sub-card {
+border-radius: 14px; padding: 16px 8px; text-align: center; border: 2px solid var(--border);
+background: var(--bg2); cursor: pointer; transition: all .2s;
+}
+.sub-card.selected { border-color: var(--sel-color); background: color-mix(in srgb, var(--sel-color) 15%, var(--bg2)); }
+.sub-card.disabled { opacity: .4; cursor: not-allowed; }
+.sub-icon { font-size: 26px; margin-bottom: 6px; }
+.sub-name { font-size: 12px; font-weight: 700; }
+.btn-lock {
+width: 100%; padding: 15px; border-radius: 14px; border: none;
+background: var(--accent2); color: #fff; font-family: 'DM Sans', sans-serif;
+font-weight: 700; font-size: 15px; cursor: pointer; transition: all .2s; margin-bottom: 20px;
+}
+.btn-lock:disabled { opacity: .4; cursor: not-allowed; }
+/* task card */
+.task-card {
+background: var(--bg2); border: 1px solid var(--border);
+border-radius: 16px; padding: 18px; margin-bottom: 14px;
+border-left: 4px solid var(--sub-color);
+}
+.task-card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.task-card-icon { font-size: 20px; }
+.task-card-name { font-weight: 700; font-size: 15px; flex: 1; }
+.task-progress { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; padding: 3px 9px; border-radius: 99px; }
+.task-item {
+display: flex; align-items: center; gap: 12px; padding: 11px 13px;
+border-radius: 10px; margin-bottom: 8px; cursor: pointer;
+border: 1px solid var(--border); background: var(--bg3); transition: all .2s;
+}
+.task-item.done { background: #05260e; border-color: #16a34a33; }
+.task-check {
+width: 22px; height: 22px; border-radius: 6px; border: 2px solid var(--muted);
+display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+font-size: 12px; transition: all .2s;
+}
+.task-item.done .task-check { background: #16a34a; border-color: #16a34a; color: #fff; }
+.task-text { flex: 1; font-size: 14px; }
+.task-item.done .task-text { text-decoration: line-through; color: var(--muted); }
+.task-credits { font-size: 11px; font-weight: 700; color: #16a34a; font-family: 'JetBrains Mono', monospace; }
+.task-actions { display: flex; gap: 6px; margin-left: auto; flex-shrink: 0; }
+.task-btn-edit, .task-btn-delete {
+background: none; border: none; font-size: 16px; cursor: pointer;
+opacity: 0.6; transition: opacity .2s;
+padding: 4px; line-height: 1;
+}
+.task-btn-edit:hover, .task-btn-delete:hover { opacity: 1; }
+.task-item.done .task-actions { display: none; }
+.add-task-row { display: flex; gap: 8px; margin-top: 10px; }
+.task-input {
+flex: 1; padding: 10px 14px; border-radius: 10px;
+border: 1px solid var(--border); background: var(--bg);
+color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 13px; outline: none;
+}
+.task-input:focus { border-color: var(--accent); }
+.btn-add {
+padding: 10px 16px; border-radius: 10px; border: none;
+font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 13px; cursor: pointer;
+color: #fff; transition: all .15s;
+}
+.btn-finish {
+width: 100%; padding: 16px; border-radius: 14px; border: none;
+font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 15px; cursor: pointer;
+transition: all .2s; margin-top: 6px;
+}
+.day-done-banner {
+background: #052611; border: 1px solid #16a34a44; border-radius: 14px;
+padding: 20px; text-align: center; margin-top: 6px;
+}
+/* titles journey */
+.titles-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+.title-pill {
+padding: 6px 14px; border-radius: 99px; font-size: 12px; font-weight: 700;
+border: 1px solid var(--border); background: var(--bg3); color: var(--muted);
+transition: all .2s;
+}
+.title-pill.unlocked { color: var(--pill-color); background: color-mix(in srgb, var(--pill-color) 15%, var(--bg3)); border-color: var(--pill-color); }
+/* ── FEED PAGE ── */
+.feed-card {
+background: var(--bg2); border: 1px solid var(--border); border-radius: 16px;
+padding: 18px; margin-bottom: 14px; border-left: 4px solid var(--border);
+animation: fadeUp .3s ease forwards;
+}
+.feed-card.me { border-left-color: var(--accent2); }
+.feed-card.active-today { border-left-color: var(--accent); }
+.feed-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+.avatar {
+width: 42px; height: 42px; border-radius: 13px; display: flex;
+align-items: center; justify-content: center; font-weight: 800; font-size: 17px; flex-shrink: 0;
+background-size: cover; background-position: center; overflow: hidden;
+}
+.avatar.premium-avatar { box-shadow: 0 0 16px #f59e0b66; }
+.feed-name { font-weight: 700; font-size: 15px; }
+.feed-title-label { font-size: 12px; font-weight: 600; margin-top: 1px; }
+.feed-status {
+margin-left: auto; font-size: 11px; font-weight: 700; padding: 4px 10px;
+border-radius: 99px; font-family: 'JetBrains Mono', monospace;
+}
+/* ── LEADERBOARD PAGE ── */
+.board-card {
+background: var(--bg2); border: 1px solid var(--border); border-radius: 16px;
+padding: 16px 18px; margin-bottom: 10px; display: flex; align-items: center; gap: 14px;
+animation: fadeUp .3s ease forwards;
+}
+.board-rank { font-family: 'Bebas Neue', sans-serif; font-size: 28px; width: 36px; text-align: center; }
+.board-info { flex: 1; }
+.board-name { font-weight: 700; font-size: 15px; }
+.board-title { font-size: 12px; margin-top: 1px; }
+.board-credits { text-align: right; }
+.board-num { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 20px; color: var(--accent); }
+.board-label { font-size: 10px; color: var(--muted); }
+/* ── TOAST ── */
+#toast {
+position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px);
+z-index: 999; opacity: 0; transition: all .3s; pointer-events: none;
+background: var(--bg2); border: 1px solid var(--border);
+padding: 12px 22px; border-radius: 14px; font-size: 14px; font-weight: 600;
+white-space: nowrap; box-shadow: 0 8px 32px #00000066;
+}
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+#toast.ok { border-color: #16a34a66; color: #4ade80; }
+#toast.err { border-color: #dc262666; color: #fca5a5; }
+/* ── LOADER ── */
+#loader {
+position: fixed; inset: 0; background: var(--bg); z-index: 9999;
+display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px;
+}
+.loader-logo { font-family: 'Bebas Neue', sans-serif; font-size: 60px; letter-spacing: 3px; }
+.loader-logo span { color: var(--accent); }
+.loader-spin {
+width: 32px; height: 32px; border: 3px solid var(--border);
+border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite;
+}
+@keyframes goldShimmer {
+0%   { background-position: 0% 50%; }
+100% { background-position: 200% 50%; }
+}
+@keyframes titleGlow {
+from { box-shadow: 0 0 4px #f59e0b44; }
+to   { box-shadow: 0 0 12px #f59e0baa; }
+}
+@keyframes titleGlow2 {
+from { box-shadow: 0 0 4px #a78bfa44; }
+to   { box-shadow: 0 0 12px #a78bfaaa; }
+}
+@keyframes titleGlow3 {
+from { box-shadow: 0 0 4px #06b6d444; }
+to   { box-shadow: 0 0 12px #06b6d4aa; }
+}
+.premium-feature-row {
+display: flex; align-items: flex-start; gap: 12px;
+padding: 12px 14px; border-radius: 12px; margin-bottom: 8px;
+background: var(--bg3); border: 1px solid var(--border);
+transition: border-color .2s;
+}
+.premium-feature-row:hover { border-color: #f59e0b55; }
+.premium-feature-icon { font-size: 22px; flex-shrink: 0; margin-top: 1px; }
+.premium-feature-name { font-weight: 700; font-size: 14px; color: var(--text); }
+.premium-feature-desc { font-size: 12px; color: var(--muted); margin-top: 2px; line-height: 1.4; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
+@keyframes pop { 0%{transform:scale(.85)}60%{transform:scale(1.05)}100%{transform:scale(1)} }
+.pop { animation: pop .3s ease; }
+/* ── ADMIN ── */
+.admin-stat {
+background: var(--bg2); border: 1px solid var(--border); border-radius: 14px;
+padding: 14px 12px; text-align: center;
+}
+.admin-stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 32px; color: var(--accent); line-height: 1; }
+.admin-stat-label { font-size: 11px; color: var(--muted); margin-top: 3px; text-transform: uppercase; letter-spacing: .8px; }
+.admin-tabs { display: flex; gap: 6px; margin-bottom: 18px; background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; padding: 5px; }
+.admin-tab {
+flex: 1; padding: 9px 4px; border: none; border-radius: 10px; font-family: 'DM Sans', sans-serif;
+font-size: 11px; font-weight: 700; cursor: pointer; background: transparent;
+color: var(--muted); text-transform: uppercase; letter-spacing: .5px; transition: all .2s;
+}
+.admin-tab.active { background: var(--accent); color: #fff; }
+.admin-tab-panel { display: none; }
+.admin-tab-panel.active { display: block; }
+.admin-search {
+width: 100%; padding: 10px 14px; background: var(--bg2); border: 1px solid var(--border);
+border-radius: 12px; color: var(--text); font-size: 14px; outline: none;
+font-family: 'DM Sans', sans-serif; margin-bottom: 14px;
+}
+.admin-search:focus { border-color: var(--accent2); }
+.admin-card {
+background: var(--bg2); border: 1px solid var(--border); border-radius: 16px;
+margin-bottom: 14px; overflow: hidden;
+}
+.admin-card.banned { border-color: #ef444466; background: #1a0a0a; }
+.admin-card.premium { border-color: #f59e0b66; }
+.admin-card-header {
+padding: 14px 16px; display: flex; align-items: center; gap: 12px;
+cursor: pointer; user-select: none;
+}
+.admin-card-header:hover { background: var(--bg3); }
+.admin-card-body { padding: 0 16px 16px; display: none; border-top: 1px solid var(--border); }
+.admin-card-body.open { display: block; }
+.admin-detail-row {
+display: flex; justify-content: space-between; align-items: center;
+padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px;
+}
+.admin-detail-row:last-child { border-bottom: none; }
+.admin-detail-label { color: var(--muted); }
+.admin-detail-val { font-weight: 600; font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+.admin-action-btn {
+padding: 8px 12px; border-radius: 10px; font-family: 'DM Sans', sans-serif;
+font-weight: 700; font-size: 11px; cursor: pointer; border: 1px solid var(--border);
+background: var(--bg3); color: var(--text); transition: all .15s;
+}
+.admin-action-btn:hover { opacity: .8; }
+.admin-action-btn.danger { background: #7f1d1d; color: #fca5a5; border-color: #dc2626; }
+.admin-action-btn.gold { background: #78350f; color: #fde68a; border-color: #d97706; }
+.admin-action-btn.green { background: #052e16; color: #86efac; border-color: #16a34a; }
+.admin-action-btn.purple { background: #2e1065; color: #c4b5fd; border-color: #7c3aed; }
+.bug-card {
+background: var(--bg2); border: 1px solid var(--border); border-radius: 14px;
+padding: 14px 16px; margin-bottom: 12px;
+}
+.bug-card-meta { font-size: 11px; color: var(--muted); margin-bottom: 6px; font-family: 'JetBrains Mono', monospace; }
+.bug-card-text { font-size: 13px; color: var(--text); line-height: 1.5; }
+.broadcast-box {
+background: var(--bg2); border: 1px solid var(--border); border-radius: 16px; padding: 18px;
+}
+.broadcast-input {
+width: 100%; padding: 12px 14px; background: var(--bg3); border: 1px solid var(--border);
+border-radius: 12px; color: var(--text); font-size: 14px; outline: none; resize: none;
+font-family: 'DM Sans', sans-serif; margin-bottom: 12px; height: 100px;
+}
+.broadcast-input:focus { border-color: var(--accent); }
+/* ── SHOP PAGE ── */
+.shop-cat-btn {
+padding:7px 14px; border-radius:99px; border:1px solid var(--border);
+background:var(--bg2); color:var(--muted); font-family:'DM Sans',sans-serif;
+font-weight:600; font-size:12px; cursor:pointer; white-space:nowrap; transition:all .2s;
+flex-shrink:0;
+}
+.shop-cat-btn.active { background:var(--accent2); border-color:var(--accent2); color:#fff; }
+.shop-item-card {
+background:var(--bg2); border:1px solid var(--border); border-radius:16px;
+padding:16px; margin-bottom:12px; transition:border-color .2s;
+position:relative; overflow:hidden;
+}
+.shop-item-card::before {
+content:''; position:absolute; top:0; left:0; right:0; height:3px;
+background:var(--item-color,var(--accent)); opacity:.6; border-radius:16px 16px 0 0;
+}
+.shop-item-card.owned { border-color:color-mix(in srgb,var(--item-color,var(--accent)) 40%,var(--border)); }
+.shop-item-header { display:flex; align-items:flex-start; gap:12px; margin-bottom:10px; }
+.shop-item-icon { font-size:28px; flex-shrink:0; }
+.shop-item-name { font-weight:800; font-size:15px; margin-bottom:2px; }
+.shop-item-desc { font-size:12px; color:var(--muted); line-height:1.4; }
+.shop-item-footer { display:flex; align-items:center; justify-content:space-between; }
+.shop-item-price { font-weight:800; font-size:14px; color:var(--gold); }
+.shop-item-price.free { color:#4ade80; }
+.btn-buy {
+padding:8px 18px; border-radius:10px; border:none; cursor:pointer;
+font-family:'DM Sans',sans-serif; font-weight:700; font-size:13px; transition:all .2s;
+background:var(--item-color,var(--accent2)); color:#fff;
+}
+.btn-buy:disabled { background:var(--bg3); color:var(--muted); cursor:not-allowed; }
+.btn-buy.owned-btn { background:#16a34a22; color:#4ade80; border:1px solid #16a34a44; }
+.btn-buy.active-btn { background:#7c3aed22; color:#a78bfa; border:1px solid #7c3aed44; }
+.shop-badge { font-size:9px; font-weight:700; padding:2px 7px; border-radius:99px; margin-left:6px; }
+.shop-badge-new { background:#ef444422; color:#fca5a5; border:1px solid #ef444444; }
+.shop-badge-popular { background:#f59e0b22; color:#fbbf24; border:1px solid #f59e0b44; }
+.owned-item-pill {
+display:inline-flex; align-items:center; gap:6px; padding:6px 12px;
+border-radius:10px; background:var(--bg2); border:1px solid var(--border);
+font-size:12px; font-weight:600; margin:0 6px 6px 0;
+}
+/* ── PROGRESS PAGE ── */
+.progress-stats-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 20px; }
+.progress-stat { background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; padding: 14px 10px; text-align: center; }
+.progress-stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 30px; line-height: 1; }
+.progress-stat-label { font-size: 10px; color: var(--muted); margin-top: 3px; text-transform: uppercase; letter-spacing: .7px; }
+.badges-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-bottom: 6px; }
+.badge-item { display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 12px 6px; background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; cursor: default; transition: all .2s; }
+.badge-item.unlocked { border-color: var(--gold); background: color-mix(in srgb, var(--gold) 8%, var(--bg2)); }
+.badge-item.locked { opacity: .4; filter: grayscale(1); }
+.badge-icon { font-size: 24px; }
+.badge-name { font-size: 9px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; text-align: center; line-height: 1.3; }
+.badge-item.unlocked .badge-name { color: var(--gold); }
+.challenge-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 16px; padding: 16px; margin-bottom: 12px; }
+.challenge-title { font-weight: 700; font-size: 14px; margin-bottom: 4px; }
+.challenge-desc { font-size: 12px; color: var(--muted); margin-bottom: 10px; line-height: 1.4; }
+.challenge-progress-bar { height: 6px; background: var(--bg3); border-radius: 3px; overflow: hidden; margin-bottom: 8px; }
+.challenge-progress-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--accent2), var(--accent)); transition: width .5s ease; }
+.challenge-footer { display: flex; justify-content: space-between; align-items: center; font-size: 11px; }
+.challenge-reward { color: var(--gold); font-weight: 700; }
+.challenge-status { font-weight: 700; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
+/* Spin Wheel */
+.spin-container { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 20px 16px; background: var(--bg2); border: 1px solid var(--border); border-radius: 18px; margin-bottom: 20px; }
+#spinCanvas { border-radius: 50%; box-shadow: 0 0 30px #7c3aed44; }
+.btn-spin { padding: 14px 36px; background: linear-gradient(135deg, var(--accent2), var(--accent)); border: none; border-radius: 14px; color: #fff; font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 1px; cursor: pointer; transition: transform .1s; box-shadow: 0 4px 20px #7c3aed55; }
+.btn-spin:hover { transform: scale(1.04); }
+.btn-spin:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+.spin-note { font-size: 11px; color: var(--muted); text-align: center; }
+/* Level System */
+.level-card { background: var(--bg2); border: 2px solid var(--accent2); border-radius: 18px; padding: 20px; margin-bottom: 20px; position: relative; overflow: hidden; }
+.level-card::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, color-mix(in srgb, var(--accent2) 22%, transparent), color-mix(in srgb, var(--accent) 11%, transparent)); pointer-events: none; }
+.level-header { display: flex; align-items: center; gap: 16px; margin-bottom: 14px; position: relative; z-index: 1; }
+.level-badge { font-size: 48px; display: flex; align-items: center; justify-content: center; width: 70px; height: 70px; background: linear-gradient(135deg, var(--accent2), var(--accent)); border-radius: 50%; box-shadow: 0 0 24px #7c3aed66; }
+.level-info { flex: 1; }
+.level-number { font-family: 'Bebas Neue', sans-serif; font-size: 32px; letter-spacing: 1px; color: #fff; line-height: 1; }
+.level-title { font-size: 13px; color: var(--muted); margin-top: 2px; text-transform: uppercase; letter-spacing: .5px; }
+.level-progress-section { position: relative; z-index: 1; }
+.level-progress-label { font-size: 12px; font-weight: 700; margin-bottom: 6px; display: flex; justify-content: space-between; }
+.level-progress-label-text { color: var(--text); }
+.level-progress-label-xp { color: var(--accent); font-family: 'JetBrains Mono', monospace; }
+.level-progress-bar { height: 10px; background: var(--bg3); border-radius: 5px; overflow: hidden; box-shadow: inset 0 1px 2px #00000044; }
+.level-progress-fill { height: 100%; border-radius: 5px; background: linear-gradient(90deg, var(--accent2), var(--accent)); box-shadow: 0 0 12px #7c3aed77; transition: width .5s ease; }
+.level-unlock { font-size: 12px; color: var(--muted); margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
+.level-unlock-item { color: var(--accent2); font-weight: 700; }
+/* Monthly Trophy */
+.trophy-banner { background: linear-gradient(135deg, #f59e0b22, #ff6b3522); border: 2px solid var(--gold); border-radius: 16px; padding: 16px; margin-bottom: 20px; display: flex; align-items: center; gap: 14px; position: relative; }
+.trophy-icon { font-size: 52px; animation: trophyBounce 2s ease-in-out infinite; }
+.trophy-content { flex: 1; }
+.trophy-title { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 1px; color: var(--gold); }
+.trophy-desc { font-size: 12px; color: var(--muted); margin-top: 2px; }
+@keyframes trophyBounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+/* Broadcast banner */
+#broadcastBanner { display: none; position: fixed; top: 0; left: 0; right: 0; z-index: 9999; background: linear-gradient(90deg, #7c3aed, #ff6b35); padding: 10px 16px; align-items: center; gap: 10px; }
+#broadcastBannerText { flex: 1; font-size: 13px; font-weight: 600; color: #fff; }
+.btn-dismiss-broadcast { background: none; border: none; color: #ffffffaa; font-size: 18px; cursor: pointer; flex-shrink: 0; }
+/* ── DAILY QUOTE ── */
+.quote-card {
+background: linear-gradient(135deg, #1a1a2e, #12121f);
+border: 1px solid var(--accent2);
+border-radius: 16px; padding: 16px 18px; margin-bottom: 16px;
+position: relative; overflow: hidden;
+}
+.quote-card::before {
+content: '"'; position: absolute; top: -10px; left: 10px;
+font-size: 80px; color: var(--accent2); opacity: .1;
+font-family: Georgia, serif; line-height: 1;
+}
+.quote-text { font-size: 14px; font-weight: 600; line-height: 1.5; color: var(--text); position: relative; z-index: 1; }
+.quote-author { font-size: 11px; color: var(--accent2); margin-top: 6px; font-weight: 700; letter-spacing: .5px; }
+/* ── SHOUTOUT BANNER ── */
+.shoutout-banner {
+background: linear-gradient(135deg, #78350f, #1a1a2e);
+border: 1px solid var(--gold); border-radius: 16px;
+padding: 14px 16px; margin-bottom: 16px; display: flex; align-items: center; gap: 12px;
+}
+.shoutout-crown { font-size: 28px; flex-shrink: 0; }
+.shoutout-label { font-size: 10px; color: var(--gold); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px; }
+.shoutout-name { font-size: 15px; font-weight: 800; color: #fff; }
+.shoutout-msg { font-size: 11px; color: #fde68a; margin-top: 2px; line-height: 1.4; }
+/* ── PREMIUM ── */
+.premium-border { box-shadow: 0 0 0 2px var(--gold), 0 0 16px #f59e0b44 !important; }
+.premium-badge { display: inline-flex; align-items: center; gap: 3px; background: #f59e0b22; color: var(--gold); border: 1px solid #f59e0b66; border-radius: 6px; padding: 2px 7px; font-size: 10px; font-weight: 700; }
+.avatar.premium-avatar { box-shadow: 0 0 0 2px var(--gold), 0 0 10px #f59e0b66; }
+/* ── RIVAL ── */
+.rival-card {
+background: var(--bg2); border: 1px solid var(--accent); border-radius: 16px;
+padding: 16px; margin-bottom: 16px; overflow: hidden; position: relative;
+}
+.rival-card::before {
+content: '⚔️'; position: absolute; top: 50%; right: 14px;
+transform: translateY(-50%); font-size: 36px; opacity: .12;
+}
+.rival-vs { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.rival-player { flex: 1; text-align: center; }
+.rival-player-name { font-weight: 800; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rival-player-creds { font-size: 12px; color: var(--muted); margin-top: 2px; font-family: 'JetBrains Mono', monospace; }
+.rival-vs-badge { font-family: 'Bebas Neue', sans-serif; font-size: 18px; color: var(--accent); flex-shrink: 0; }
+.rival-bar-wrap { height: 8px; background: var(--bg3); border-radius: 4px; overflow: hidden; display: flex; }
+.rival-bar-me { height: 100%; background: var(--accent2); border-radius: 4px 0 0 4px; transition: width .6s ease; }
+.rival-bar-them { height: 100%; background: var(--accent); border-radius: 0 4px 4px 0; transition: width .6s ease; }
+.rival-footer { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-top: 6px; }
+/* ── INSTALL BANNER (keep) ── */
+#installBanner {
+position: fixed; bottom: 80px; left: 16px; right: 16px; z-index: 200;
+background: var(--bg2); border: 1px solid var(--accent2);
+border-radius: 16px; padding: 14px 18px; display: none;
+align-items: center; gap: 12px; box-shadow: 0 8px 32px #7c3aed33;
+}
+#installBanner.show { display: flex; }
+.install-text { flex: 1; font-size: 13px; font-weight: 600; }
+.install-text small { display: block; color: var(--muted); font-weight: 400; font-size: 11px; margin-top: 2px; }
+.btn-install { padding: 9px 18px; background: var(--accent2); color: #fff; border: none; border-radius: 10px; font-family: 'DM Sans',sans-serif; font-weight: 700; font-size: 13px; cursor: pointer; white-space: nowrap; }
+.btn-dismiss { background: transparent; border: none; color: var(--muted); font-size: 20px; cursor: pointer; padding: 4px; }
+/* ── OATH SCREEN ── */
+#oathScreen {
+display: none;
+position: fixed; inset: 0; z-index: 5000;
+background: #000;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+padding: 32px 28px;
+overflow: hidden;
+text-align: center;
+}
+#oathScreen.active { display: flex; }
+/* pulsing bg glow */
+.oath-bg {
+position: absolute; inset: 0; pointer-events: none;
+background:
+radial-gradient(ellipse 70% 50% at 50% 20%, #7c3aed33 0%, transparent 65%),
+radial-gradient(ellipse 50% 40% at 50% 85%, #ff6b3522 0%, transparent 60%);
+animation: oathGlow 4s ease-in-out infinite alternate;
+}
+@keyframes oathGlow {
+0%   { opacity: 0.5; transform: scale(1); }
+100% { opacity: 1;   transform: scale(1.08); }
+}
+/* flame */
+.oath-flame {
+font-size: 64px; line-height: 1;
+animation: flameBreathe 3s ease-in-out infinite;
+position: relative; z-index: 1;
+margin-bottom: 20px;
+filter: drop-shadow(0 0 24px #ff6b35aa);
+}
+@keyframes flameBreathe {
+0%,100% { transform: scale(1)   translateY(0);   filter: drop-shadow(0 0 18px #ff6b35aa); }
+50%      { transform: scale(1.1) translateY(-6px); filter: drop-shadow(0 0 36px #ff6b35ff); }
+}
+/* title */
+.oath-title {
+font-family: 'Bebas Neue', sans-serif;
+font-size: clamp(28px, 8vw, 46px);
+letter-spacing: 3px;
+color: #fff;
+position: relative; z-index: 1;
+margin-bottom: 32px;
+opacity: 0;
+animation: oathFadeIn 1s ease forwards;
+animation-delay: 0.3s;
+text-shadow: 0 0 30px #7c3aed88;
+}
+.oath-title span { color: var(--accent); }
+/* oath lines */
+.oath-lines {
+position: relative; z-index: 1;
+margin-bottom: 36px;
+width: 100%; max-width: 360px;
+}
+.oath-line {
+font-size: clamp(14px, 4vw, 17px);
+font-weight: 500;
+color: #e0e0ff;
+line-height: 1.6;
+margin-bottom: 10px;
+opacity: 0;
+transform: translateY(12px);
+transition: none;
+}
+.oath-line.revealed {
+animation: oathLineReveal 0.8s ease forwards;
+}
+.oath-line.highlight {
+color: #fff;
+font-weight: 700;
+font-size: clamp(15px, 4.2vw, 18px);
+}
+@keyframes oathLineReveal {
+to { opacity: 1; transform: translateY(0); }
+}
+/* divider */
+.oath-divider {
+width: 60px; height: 2px;
+background: linear-gradient(90deg, transparent, var(--accent2), transparent);
+margin: 0 auto 28px;
+opacity: 0;
+}
+.oath-divider.revealed { animation: oathFadeIn 0.8s ease forwards; }
+/* buttons */
+.oath-buttons {
+position: relative; z-index: 1;
+display: flex; flex-direction: column; align-items: center; gap: 16px;
+width: 100%; max-width: 320px;
+opacity: 0;
+}
+.oath-buttons.revealed { animation: oathFadeIn 0.9s ease forwards; }
+.btn-oath-swear {
+width: 100%; padding: 17px 24px;
+border-radius: 16px; border: none;
+background: linear-gradient(135deg, #ff6b35, #7c3aed);
+color: #fff;
+font-family: 'DM Sans', sans-serif;
+font-weight: 800; font-size: 16px;
+cursor: pointer; letter-spacing: 0.3px;
+box-shadow: 0 0 24px #ff6b3566, 0 0 48px #7c3aed44;
+animation: swearPulse 2.5s ease-in-out infinite;
+transition: transform .15s, filter .15s;
+}
+.btn-oath-swear:active { transform: scale(0.97); }
+@keyframes swearPulse {
+0%,100% { box-shadow: 0 0 20px #ff6b3566, 0 0 40px #7c3aed44; }
+50%      { box-shadow: 0 0 36px #ff6b3599, 0 0 64px #7c3aed77; }
+}
+.btn-oath-leave {
+background: none; border: none;
+color: #4a4a6a; font-family: 'DM Sans', sans-serif;
+font-size: 13px; font-weight: 500;
+cursor: pointer; text-decoration: underline;
+padding: 4px 8px;
+transition: color .2s;
+}
+.btn-oath-leave:hover { color: #6b6b8a; }
+/* goodbye screen */
+.oath-goodbye {
+display: none;
+position: relative; z-index: 1;
+flex-direction: column; align-items: center; gap: 16px;
+text-align: center;
+}
+.oath-goodbye.show { display: flex; }
+@keyframes oathFadeIn {
+to { opacity: 1; transform: translateY(0); }
+}
+</style>
+<script>
+const APP_VERSION = "1.1.0";
+const savedVersion = localStorage.getItem("app_version");
+if (savedVersion && savedVersion !== APP_VERSION) {
+// Show update banner instead of silent reload
+window.addEventListener('DOMContentLoaded', () => {
+const banner = document.createElement('div');
+banner.id = 'updateBanner';
+banner.innerHTML = `
+<div style="position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:9999;
+background:linear-gradient(135deg,#ff6b35,#7c3aed);
+border-radius:16px;padding:14px 20px;display:flex;align-items:center;gap:14px;
+box-shadow:0 8px 32px rgba(0,0,0,0.4);min-width:280px;max-width:340px;">
+<span style="font-size:24px;">🚀</span>
+<div style="flex:1;">
+<div style="color:#fff;font-weight:700;font-size:14px;">New update available!</div>
+<div style="color:rgba(255,255,255,0.8);font-size:12px;margin-top:2px;">Tap to get the latest version</div>
+</div>
+<button onclick="localStorage.setItem('app_version','${APP_VERSION}');window.location.reload(true);"
+style="background:rgba(255,255,255,0.25);border:none;color:#fff;font-weight:700;
+font-size:13px;padding:8px 14px;border-radius:10px;cursor:pointer;white-space:nowrap;">
+Update ✨
+</button>
+</div>`;
+document.body.appendChild(banner);
+});
+} else {
+localStorage.setItem("app_version", APP_VERSION);
+}
+</script>
+</head>
+<body>
+<div id="loader">
+<div class="loader-logo"><span>JEE</span>GRIND</div>
+<div class="loader-spin"></div>
+</div>
+<div id="authScreen" class="screen">
+<div class="auth-bg"></div>
+<div class="auth-logo"><span>JEE</span>GRIND 🔥</div>
+<p class="auth-tagline">Your squad. Your streak. Your rank.</p>
+<div class="auth-card">
+<div class="auth-tabs">
+<button class="auth-tab active" onclick="switchTab('signup')">Sign Up</button>
+<button class="auth-tab" onclick="switchTab('login')">Log In</button>
+</div>
+<div id="authError" class="auth-error"></div>
+<div id="signupForm">
+<div class="form-group">
+<label class="form-label">Display Name</label>
+<input class="form-input" id="signupName" type="text" placeholder="e.g. Arjun, Priya…" maxlength="20"/>
+</div>
+<div class="form-group">
+<label class="form-label">Email</label>
+<input class="form-input" id="signupEmail" type="email" placeholder="you@example.com"/>
+</div>
+<div class="form-group">
+<label class="form-label">Password</label>
+<input class="form-input" id="signupPass" type="password" placeholder="Min. 6 characters"/>
+</div>
+<button class="btn-primary" id="signupBtn" onclick="doSignup()">Create Account →</button>
+</div>
+<div id="loginForm" style="display:none">
+<div class="form-group">
+<label class="form-label">Email</label>
+<input class="form-input" id="loginEmail" type="email" placeholder="you@example.com"/>
+</div>
+<div class="form-group">
+<label class="form-label">Password</label>
+<input class="form-input" id="loginPass" type="password" placeholder="Your password"/>
+</div>
+<button class="btn-primary" id="loginBtn" onclick="doLogin()">Log In →</button>
+<div style="text-align:center;margin-top:12px;">
+<span onclick="doForgotPassword()" style="color:var(--muted);font-size:13px;cursor:pointer;text-decoration:underline;">Forgot password?</span>
+</div>
+</div>
+</div>
+</div>
+<div id="appScreen" class="screen">
+<div class="topbar">
+<div class="topbar-logo"><span>JEE</span>GRIND</div>
+<div class="topbar-right">
+<div class="stat-pill" id="streakPill">🔥 0d</div>
+<div class="stat-pill" id="creditsPill">⚡ 0</div>
+<button onclick="openMenu()" style="background:transparent;border:none;color:var(--text);cursor:pointer;font-size:22px;padding:4px 8px;">☰</button>
+</div>
+</div>
+<div class="page active" id="homePage">
+<div class="countdown-card">
+<div class="countdown-top">
+<div class="countdown-label">🎯 JEE MAINS 2027</div>
+<div class="countdown-session">Session 1 · Jan 21</div>
+</div>
+<div class="countdown-blocks">
+<div class="cd-block">
+<div class="cd-num days" id="cdDays">---</div>
+<div class="cd-unit">Days</div>
+</div>
+<div class="cd-block">
+<div class="cd-num" id="cdHrs">--</div>
+<div class="cd-unit">Hrs</div>
+</div>
+<div class="cd-block">
+<div class="cd-num" id="cdMins">--</div>
+<div class="cd-unit">Mins</div>
+</div>
+<div class="cd-block">
+<div class="cd-num" id="cdSecs">--</div>
+<div class="cd-unit">Secs</div>
+</div>
+</div>
+<div class="countdown-quote" id="cdQuote">Every second counts. Lock in. 🔥</div>
+</div>
+<div class="quote-card" id="dailyQuoteCard">
+<div class="quote-text" id="dailyQuoteText">Loading today's quote…</div>
+<div class="quote-author" id="dailyQuoteAuthor"></div>
+</div>
+<div class="shoutout-banner" id="shoutoutBanner" style="display:none">
+<div class="shoutout-crown">👑</div>
+<div>
+<div class="shoutout-label">Grinder of the Week</div>
+<div class="shoutout-name" id="shoutoutName"></div>
+<div class="shoutout-msg" id="shoutoutMsg"></div>
+</div>
+</div>
+<div id="rivalCard" style="display:none">
+<div style="font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1px;margin-bottom:8px">⚔️ YOUR RIVAL THIS WEEK</div>
+<div class="rival-card">
+<div class="rival-vs">
+<div class="rival-player">
+<div class="rival-player-name" id="rivalMyName">You</div>
+<div class="rival-player-creds" id="rivalMyCredits">⚡0</div>
+</div>
+<div class="rival-vs-badge">VS</div>
+<div class="rival-player">
+<div class="rival-player-name" id="rivalTheirName">?</div>
+<div class="rival-player-creds" id="rivalTheirCredits">⚡0</div>
+</div>
+</div>
+<div class="rival-bar-wrap">
+<div class="rival-bar-me" id="rivalBarMe" style="width:50%"></div>
+<div class="rival-bar-them" id="rivalBarThem" style="width:50%"></div>
+</div>
+<div class="rival-footer">
+<span id="rivalLeading"></span>
+<span style="color:var(--accent);font-weight:700" id="rivalResetIn">Resets Monday</span>
+</div>
+</div>
+</div>
+<div class="title-banner" id="titleBanner">
+<div class="title-emoji" id="titleEmoji">😴</div>
+<div class="title-info">
+<div class="title-name" id="titleName">SLEEPER</div>
+<div class="title-sub" id="titleSub">Start your streak!</div>
+</div>
+<div class="streak-badge" id="streakBadge">0 days</div>
+</div>
+<div id="pickSection">
+<div class="section-title">Choose up to 3 subjects for today</div>
+<div class="sub-grid">
+<div class="sub-card" id="subMaths" style="--sel-color:var(--math)" onclick="toggleSub('Maths')">
+<div class="sub-icon">∑</div>
+<div class="sub-name" style="color:var(--math)">Maths</div>
+</div>
+<div class="sub-card" id="subPhysics" style="--sel-color:var(--phys)" onclick="toggleSub('Physics')">
+<div class="sub-icon">⚛️</div>
+<div class="sub-name" style="color:var(--phys)">Physics</div>
+</div>
+<div class="sub-card" id="subChemistry" style="--sel-color:var(--chem)" onclick="toggleSub('Chemistry')">
+<div class="sub-icon">⚗️</div>
+<div class="sub-name" style="color:var(--chem)">Chemistry</div>
+</div>
+</div>
+<button class="btn-lock" id="lockSubBtn" disabled onclick="lockSubjects()">🔒 Lock Subjects & Start</button>
+</div>
+<div id="tasksSection" style="display:none"></div>
+<div style="margin-top:20px">
+<div class="section-title">Title Journey</div>
+<div class="titles-grid" id="titlesGrid"></div>
+</div>
+</div>
+<div class="page" id="feedPage">
+<div class="section-title" style="margin-bottom:16px">Squad Feed — Today</div>
+<div id="feedList"></div>
+</div>
+<div class="page" id="boardPage">
+<div class="section-title">Weekly Leaderboard 🏆</div>
+<p style="color:var(--muted);font-size:12px;margin-bottom:20px">Week resets every Monday • +10⚡ per task • +20⚡ streak bonus</p>
+<div id="boardList"></div>
+</div>
+<div class="page" id="adminPage">
+<div style="font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:1px;margin-bottom:4px">👑 ADMIN PANEL</div>
+<p style="color:var(--muted);font-size:12px;margin-bottom:16px">Full control over JEEGrind</p>
+<div id="adminStats" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px"></div>
+<div class="admin-tabs">
+<button class="admin-tab active" onclick="switchAdminTab('members')">👥 Members</button>
+<button class="admin-tab" onclick="switchAdminTab('bugs')">🐛 Bugs</button>
+<button class="admin-tab" onclick="switchAdminTab('broadcast')">📢 Broadcast</button>
+<button class="admin-tab" onclick="switchAdminTab('shoutout')">👑 Shoutout</button>
+<button class="admin-tab" onclick="switchAdminTab('nuke')">⚠️ Nuke</button>
+</div>
+<div class="admin-tab-panel active" id="adminTab_members">
+<input class="admin-search" id="adminSearch" placeholder="🔍 Search by name or email…" oninput="filterAdminMembers()" />
+<div id="adminList"></div>
+</div>
+<div class="admin-tab-panel" id="adminTab_bugs">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+<div style="font-size:13px;color:var(--muted)">User-submitted bug reports</div>
+<button class="admin-action-btn" onclick="loadBugReports()">🔄 Refresh</button>
+</div>
+<div id="bugList"><div style="text-align:center;padding:30px;color:var(--muted)">Loading…</div></div>
+</div>
+<div class="admin-tab-panel" id="adminTab_broadcast">
+<div class="broadcast-box">
+<div style="font-weight:700;font-size:14px;margin-bottom:4px">📢 Send Broadcast Message</div>
+<div style="font-size:12px;color:var(--muted);margin-bottom:14px">Shows as a banner to all users on next page load</div>
+<textarea class="broadcast-input" id="broadcastText" placeholder="Type your message… e.g. 'Server maintenance tonight at 10 PM 🔧'"></textarea>
+<div style="display:flex;gap:10px">
+<button class="admin-action-btn green" style="flex:1;padding:12px" onclick="sendBroadcast()">📤 Send to All</button>
+<button class="admin-action-btn danger" onclick="clearBroadcast()">🗑️ Clear</button>
+</div>
+<div id="lastBroadcastInfo" style="margin-top:12px;font-size:11px;color:var(--muted)"></div>
+</div>
+</div>
+<div class="admin-tab-panel" id="adminTab_shoutout">
+<div class="broadcast-box">
+<div style="font-weight:700;font-size:14px;margin-bottom:4px">👑 Set Grinder of the Week</div>
+<div style="font-size:12px;color:var(--muted);margin-bottom:14px">Shows as a golden banner on everyone's home screen</div>
+<div style="margin-bottom:10px">
+<div style="font-size:11px;color:var(--muted);margin-bottom:5px">Member Name</div>
+<input class="admin-search" id="shoutoutNameInput" placeholder="e.g. Arjun Sharma" style="margin-bottom:0"/>
+</div>
+<div style="margin-bottom:14px">
+<div style="font-size:11px;color:var(--muted);margin-bottom:5px">Message (optional)</div>
+<input class="admin-search" id="shoutoutMsgInput" placeholder="e.g. Locked 7 days straight this week 🔥" style="margin-bottom:0"/>
+</div>
+<div style="display:flex;gap:10px">
+<button class="admin-action-btn gold" style="flex:1;padding:12px" onclick="setShoutout()">👑 Pin Shoutout</button>
+<button class="admin-action-btn danger" onclick="clearShoutout()">🗑️ Clear</button>
+</div>
+<div id="shoutoutStatus" style="margin-top:12px;font-size:11px;color:var(--muted)"></div>
+</div>
+</div>
+<div class="admin-tab-panel" id="adminTab_nuke">
+<div style="background:#1a0a0a;border:1px solid #7f1d1d;border-radius:14px;padding:18px">
+<div style="font-size:12px;font-weight:700;color:#ef4444;text-transform:uppercase;letter-spacing:1px;margin-bottom:14px">⚠️ Danger Zone — Irreversible Actions</div>
+<div style="display:flex;flex-direction:column;gap:10px">
+<button class="admin-action-btn danger" style="padding:12px;font-size:13px;width:100%" onclick="adminResetAllCredits()">🗑️ Reset ALL Members' Credits to 0</button>
+<button class="admin-action-btn gold" style="padding:12px;font-size:13px;width:100%" onclick="adminResetAllStreaks()">🔥 Reset ALL Members' Streaks to 0</button>
+<button class="admin-action-btn purple" style="padding:12px;font-size:13px;width:100%" onclick="adminClearAllToday()">📅 Clear Today's Data for Everyone</button>
+</div>
+<div id="adminNukeStats" style="margin-top:14px;font-size:12px;color:var(--muted)"></div>
+</div>
+</div>
+</div>
+<div class="page" id="progressPage">
+<div style="font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:1px;margin-bottom:4px">📊 MY PROGRESS</div>
+<p style="color:var(--muted);font-size:12px;margin-bottom:16px">Your JEE journey at a glance</p>
+<div class="level-card" id="levelCard"></div>
+<div id="trophyBanner" style="display:none"></div>
+<div class="progress-stats-grid" id="progressStats"></div>
+<div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:20px">
+<div style="font-weight:700;font-size:13px;margin-bottom:12px">Subject Focus (all-time tasks)</div>
+<div id="subjectBars"></div>
+</div>
+<div style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;margin-bottom:10px">⚡ DAILY CHALLENGES</div>
+<div id="challengesList" style="margin-bottom:20px"></div>
+<div style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;margin-bottom:10px">🎰 SPIN THE WHEEL</div>
+<div class="spin-container">
+<canvas id="spinCanvas" width="240" height="240"></canvas>
+<div>
+<button class="btn-spin" id="spinBtn" onclick="spinWheel()">🎰 SPIN</button>
+</div>
+<div class="spin-note" id="spinNote">1 free spin per day • Lock your day first to unlock</div>
+</div>
+<div style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;margin-bottom:10px">🏅 BADGES</div>
+<div class="badges-grid" id="badgesGrid" style="margin-bottom:20px"></div>
+<div style="font-weight:700;font-size:13px;margin-bottom:10px">📅 Activity Heatmap (Last 30 Days)</div>
+<div id="heatmap" style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:24px"></div>
+</div>
+<div class="page" id="shopPage">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+<div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px">🛒 CREDIT SHOP</div>
+<div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:8px 14px;font-weight:800;font-size:15px;color:var(--gold)">⚡ <span id="shopCreditsDisplay">0</span></div>
+</div>
+<p style="color:var(--muted);font-size:12px;margin-bottom:18px">Spend credits on power-ups & unlocks</p>
+<div id="activePowerups" style="display:none;background:linear-gradient(135deg,#052611,#0a0a2e);border:1px solid #16a34a44;border-radius:14px;padding:14px 16px;margin-bottom:16px">
+<div style="font-size:11px;font-weight:700;color:#4ade80;text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px">⚡ Active Power-ups</div>
+<div id="activePowerupsList"></div>
+</div>
+<div style="display:flex;gap:8px;margin-bottom:16px;overflow-x:auto;padding-bottom:4px">
+<button class="shop-cat-btn active" id="scAll"   onclick="filterShop('all')">All</button>
+<button class="shop-cat-btn" id="scBoost"  onclick="filterShop('boost')">⚡ Boosts</button>
+<button class="shop-cat-btn" id="scShield" onclick="filterShop('shield')">🛡️ Protection</button>
+<button class="shop-cat-btn" id="scAvatar" onclick="filterShop('avatar')">🎨 Profile</button>
+<button class="shop-cat-btn" id="scSpecial" onclick="filterShop('special')">✨ Special</button>
+</div>
+<div id="shopGrid"></div>
+<div style="margin-top:20px">
+<div class="section-title" style="margin-bottom:12px">🎒 My Items</div>
+<div id="ownedItems"><div style="color:var(--muted);font-size:13px">No items yet. Start shopping!</div></div>
+</div>
+</div>
+<div class="page" id="doubtsPage">
+<div class="section-title" style="display:flex;align-items:center;justify-content:space-between;">
+<span>🤔 Doubts</span>
+<button onclick="openAskDoubt()" style="background:var(--accent);border:none;color:#fff;padding:8px 16px;border-radius:10px;font-weight:700;font-size:13px;cursor:pointer;">+ Ask</button>
+</div>
+<div id="doubtsList" style="display:flex;flex-direction:column;gap:12px;margin-top:4px;"></div>
+</div>
+
+<nav class="nav">
+<button class="nav-btn active" id="navHome" onclick="switchPage('home')">
+<span class="nav-icon">📅</span>My Day
+</button>
+<button class="nav-btn" id="navFeed" onclick="switchPage('feed')">
+<span class="nav-icon">👥</span>Squad
+</button>
+<button class="nav-btn" id="navBoard" onclick="switchPage('board')">
+<span class="nav-icon">🏆</span>Ranks
+</button>
+<button class="nav-btn" id="navProgress" onclick="switchPage('progress')">
+<span class="nav-icon">📊</span>Progress
+</button>
+
+<button class="nav-btn" id="navDoubts" onclick="switchPage('doubts')">
+<span class="nav-icon">🤔</span>Doubts
+</button>
+<button class="nav-btn" id="navAdmin" style="display:none" onclick="switchPage('admin')">
+<span class="nav-icon">👑</span>Admin
+</button>
+</nav>
+</div>
+<div id="broadcastBanner">
+<span style="font-size:16px">📢</span>
+<span id="broadcastBannerText"></span>
+<button class="btn-dismiss-broadcast" onclick="dismissBroadcast()">✕</button>
+</div>
+<div id="menuOverlay" onclick="closeMenu()" style="display:none;position:fixed;inset:0;background:#00000080;z-index:200;"></div>
+<div id="sideMenu" style="display:none;position:fixed;top:0;right:0;width:280px;height:100vh;background:var(--bg2);border-left:1px solid var(--border);z-index:201;flex-direction:column;overflow-y:auto;">
+<div style="padding:24px 20px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;">
+<div id="menuAvatar" style="font-size:36px;width:52px;height:52px;display:flex;align-items:center;justify-content:center;background:var(--bg3);border-radius:50%;">😊</div>
+<div style="flex:1;min-width:0;">
+<div id="menuName" style="font-weight:700;font-size:15px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Loading...</div>
+<div id="menuEmail" style="font-size:11px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
+</div>
+<button onclick="closeMenu()" style="background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;flex-shrink:0;">✕</button>
+</div>
+<div style="padding:8px 0;">
+<div onclick="openProfileModal()" style="display:flex;align-items:center;gap:14px;padding:14px 20px;cursor:pointer;" onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background='transparent'">
+<span style="font-size:20px;">👤</span>
+<div><div style="font-weight:600;font-size:14px;">Edit Profile</div><div style="font-size:12px;color:var(--muted);">Name, avatar, password</div></div>
+</div>
+<div style="display:flex;align-items:center;gap:14px;padding:14px 20px;">
+<span style="font-size:20px;" id="themeIcon">🌙</span>
+<div style="flex:1;"><div style="font-weight:600;font-size:14px;" id="themeLabel">Dark Mode</div><div style="font-size:12px;color:var(--muted);">Toggle theme</div></div>
+<div onclick="toggleTheme()" style="width:44px;height:24px;background:var(--accent);border-radius:12px;position:relative;cursor:pointer;">
+<div id="themeThumb" style="position:absolute;top:2px;left:2px;width:20px;height:20px;background:#fff;border-radius:50%;transition:transform 0.2s;"></div>
+</div>
+</div>
+<div onclick="openBugModal()" style="display:flex;align-items:center;gap:14px;padding:14px 20px;cursor:pointer;" onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background='transparent'">
+<span style="font-size:20px;">🐛</span>
+<div><div style="font-weight:600;font-size:14px;">Bug Report / Support</div><div style="font-size:12px;color:var(--muted);">Report issues to admin</div></div>
+</div>
+<div onclick="showUpgradeInfo()" style="display:flex;align-items:center;gap:14px;padding:14px 20px;cursor:pointer;background:linear-gradient(90deg,#7c3aed15,#ff6b3510);border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin:4px 0;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
+<span style="font-size:20px;">👑</span>
+<div><div style="font-weight:700;font-size:14px;color:#f59e0b;">Upgrade to Premium</div><div style="font-size:12px;color:var(--muted);">Rs.29 • 2x credits & more</div></div>
+</div>
+<div onclick="doLogout()" style="display:flex;align-items:center;gap:14px;padding:14px 20px;cursor:pointer;" onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background='transparent'">
+<span style="font-size:20px;">🚪</span>
+<div><div style="font-weight:600;font-size:14px;color:#f87171;">Log Out</div></div>
+</div>
+<div onclick="openDeleteAccountModal()" style="display:flex;align-items:center;gap:14px;padding:14px 20px;cursor:pointer;border-top:1px solid var(--border);" onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background='transparent'">
+<span style="font-size:20px;">⚠️</span>
+<div><div style="font-weight:600;font-size:14px;color:#ef4444;">Delete Account</div><div style="font-size:12px;color:var(--muted);">Permanently remove account</div></div>
+</div>
+</div>
+</div>
+<div id="profileModal" style="display:none;position:fixed;inset:0;background:#00000090;z-index:300;align-items:center;justify-content:center;padding:20px;">
+<div style="background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:24px;width:100%;max-width:360px;max-height:90vh;overflow-y:auto;">
+<div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;margin-bottom:16px;">Edit Profile</div>
+<div style="margin-bottom:16px;">
+<div style="font-size:12px;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.8px;">Avatar</div>
+<div style="text-align:center;font-size:48px;margin-bottom:10px;" id="profileAvatarDisplay">😊</div>
+<div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;">
+<span onclick="pickAvatar(this,'😊')" style="font-size:26px;cursor:pointer;padding:6px;border-radius:10px;border:2px solid transparent;">😊</span>
+<span onclick="pickAvatar(this,'😎')" style="font-size:26px;cursor:pointer;padding:6px;border-radius:10px;border:2px solid transparent;">😎</span>
+<span onclick="pickAvatar(this,'🤓')" style="font-size:26px;cursor:pointer;padding:6px;border-radius:10px;border:2px solid transparent;">🤓</span>
+<span onclick="pickAvatar(this,'💪')" style="font-size:26px;cursor:pointer;padding:6px;border-radius:10px;border:2px solid transparent;">💪</span>
+<span onclick="pickAvatar(this,'🔥')" style="font-size:26px;cursor:pointer;padding:6px;border-radius:10px;border:2px solid transparent;">🔥</span>
+<span onclick="pickAvatar(this,'⚡')" style="font-size:26px;cursor:pointer;padding:6px;border-radius:10px;border:2px solid transparent;">⚡</span>
+<span onclick="pickAvatar(this,'🎯')" style="font-size:26px;cursor:pointer;padding:6px;border-radius:10px;border:2px solid transparent;">🎯</span>
+<span onclick="pickAvatar(this,'🧠')" style="font-size:26px;cursor:pointer;padding:6px;border-radius:10px;border:2px solid transparent;">🧠</span>
+<span onclick="pickAvatar(this,'👾')" style="font-size:26px;cursor:pointer;padding:6px;border-radius:10px;border:2px solid transparent;">👾</span>
+<span onclick="pickAvatar(this,'🦁')" style="font-size:26px;cursor:pointer;padding:6px;border-radius:10px;border:2px solid transparent;">🦁</span>
+<span onclick="pickAvatar(this,'🐯')" style="font-size:26px;cursor:pointer;padding:6px;border-radius:10px;border:2px solid transparent;">🐯</span>
+<span onclick="pickAvatar(this,'🦊')" style="font-size:26px;cursor:pointer;padding:6px;border-radius:10px;border:2px solid transparent;">🦊</span>
+<span onclick="pickAvatar(this,'🤖')" style="font-size:26px;cursor:pointer;padding:6px;border-radius:10px;border:2px solid transparent;">🤖</span>
+<span onclick="pickAvatar(this,'👑')" style="font-size:26px;cursor:pointer;padding:6px;border-radius:10px;border:2px solid transparent;">👑</span>
+<span onclick="pickAvatar(this,'💀')" style="font-size:26px;cursor:pointer;padding:6px;border-radius:10px;border:2px solid transparent;">💀</span>
+<span onclick="pickAvatar(this,'🐺')" style="font-size:26px;cursor:pointer;padding:6px;border-radius:10px;border:2px solid transparent;">🐺</span>
+</div>
+<div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);">
+<div style="font-size:12px;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.8px;">Or Upload Photo</div>
+<input type="file" id="avatarUpload" accept="image/*" style="width:100%;padding:10px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:12px;"/>
+<div style="font-size:11px;color:var(--muted);margin-top:6px;">JPG, PNG, WebP • Max 2MB</div>
+</div>
+</div>
+<div style="margin-bottom:12px;">
+<div style="font-size:12px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.8px;">Display Name</div>
+<input id="profileName" type="text" style="width:100%;padding:10px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:14px;outline:none;" placeholder="Your name"/>
+</div>
+<div style="margin-bottom:20px;">
+<div style="font-size:12px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.8px;">New Password (leave blank to keep)</div>
+<input id="profilePass" type="password" style="width:100%;padding:10px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:14px;outline:none;" placeholder="Min 6 characters"/>
+</div>
+<div style="display:flex;gap:10px;">
+<button onclick="closeProfileModal()" style="flex:1;padding:12px;background:var(--bg3);border:1px solid var(--border);border-radius:12px;color:var(--text);font-weight:600;cursor:pointer;">Cancel</button>
+<button onclick="saveProfile()" style="flex:1;padding:12px;background:var(--accent);border:none;border-radius:12px;color:#fff;font-weight:700;cursor:pointer;">Save Changes</button>
+</div>
+</div>
+</div>
+<div id="bugModal" style="display:none;position:fixed;inset:0;background:#00000090;z-index:300;align-items:center;justify-content:center;padding:20px;">
+<div style="background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:24px;width:100%;max-width:360px;">
+<div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;margin-bottom:16px;">🐛 Bug Report</div>
+<textarea id="bugText" style="width:100%;height:120px;padding:12px;background:var(--bg3);border:1px solid var(--border);border-radius:12px;color:var(--text);font-size:14px;outline:none;resize:none;font-family:'DM Sans',sans-serif;" placeholder="Describe the issue..."></textarea>
+<div style="display:flex;gap:10px;margin-top:12px;">
+<button onclick="closeBugModal()" style="flex:1;padding:12px;background:var(--bg3);border:1px solid var(--border);border-radius:12px;color:var(--text);font-weight:600;cursor:pointer;">Cancel</button>
+<button onclick="submitBug()" style="flex:1;padding:12px;background:var(--accent);border:none;border-radius:12px;color:#fff;font-weight:700;cursor:pointer;">Submit</button>
+</div>
+</div>
+</div>
+<div id="deleteAccountModal" style="display:none;position:fixed;inset:0;background:#00000090;z-index:300;align-items:center;justify-content:center;padding:20px;">
+<div style="background:var(--bg2);border:2px solid #ef4444;border-radius:20px;padding:24px;width:100%;max-width:360px;">
+<div style="font-size:48px;text-align:center;margin-bottom:12px;">⚠️</div>
+<div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;margin-bottom:8px;text-align:center;color:#ef4444;">Delete Account?</div>
+<div style="color:var(--muted);font-size:13px;line-height:1.6;margin-bottom:20px;text-align:center;">This action cannot be undone. All your data, credits, and streak will be permanently deleted.</div>
+<div style="background:#ef444415;border:1px solid #ef444444;border-radius:12px;padding:12px;margin-bottom:20px;">
+<div style="font-size:12px;color:#ef4444;font-weight:700;margin-bottom:4px;">Type your email to confirm:</div>
+<input id="deleteConfirmEmail" type="text" placeholder="your email" style="width:100%;padding:10px;background:var(--bg3);border:1px solid #ef444433;border-radius:10px;color:var(--text);font-size:13px;outline:none;margin-top:6px;"/>
+</div>
+<div style="display:flex;gap:10px;">
+<button onclick="closeDeleteModal()" style="flex:1;padding:12px;background:var(--bg3);border:1px solid var(--border);border-radius:12px;color:var(--text);font-weight:600;cursor:pointer;">Cancel</button>
+<button onclick="confirmDeleteAccount()" style="flex:1;padding:12px;background:#ef4444;border:none;border-radius:12px;color:#fff;font-weight:700;cursor:pointer;">Delete Forever</button>
+</div>
+</div>
+</div>
+<div id="premiumModal" style="display:none;position:fixed;inset:0;background:#00000095;z-index:300;align-items:flex-start;justify-content:center;padding:16px;overflow-y:auto;">
+<div style="background:var(--bg2);border:2px solid #f59e0b66;border-radius:24px;width:100%;max-width:400px;margin:auto;position:relative;box-shadow:0 0 60px #f59e0b22,0 0 120px #7c3aed11;overflow:hidden;">
+<div style="height:4px;background:linear-gradient(90deg,#f59e0b,#fbbf24,#f59e0b,#d97706);background-size:200%;animation:goldShimmer 2s linear infinite;"></div>
+<div style="padding:28px 24px 20px;text-align:center;background:linear-gradient(180deg,#f59e0b0a 0%,transparent 100%);">
+<div style="font-size:48px;margin-bottom:8px;filter:drop-shadow(0 0 16px #f59e0baa);">👑</div>
+<div style="font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:3px;background:linear-gradient(135deg,#f59e0b,#fbbf24,#f97316);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">GO PREMIUM</div>
+<div style="margin-top:6px;display:flex;align-items:center;justify-content:center;gap:8px;">
+<div style="font-size:28px;font-weight:800;color:#f59e0b;font-family:'JetBrains Mono',monospace;">₹29</div>
+<div>
+<div style="font-size:13px;font-weight:700;color:#f59e0b;">/month</div>
+<div style="font-size:11px;color:var(--muted);">less than a chai ☕</div>
+</div>
+</div>
+</div>
+<div style="padding:0 20px 8px;">
+<div id="premiumFeaturesList"></div>
+</div>
+<div style="padding:0 20px 16px;">
+<div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">✨ Exclusive Premium Titles</div>
+<div style="display:flex;flex-wrap:wrap;gap:8px;">
+<div style="padding:6px 14px;border-radius:99px;font-size:12px;font-weight:700;background:#f59e0b22;border:1px solid #f59e0b;color:#f59e0b;animation:titleGlow 2s ease-in-out infinite alternate;">⚔️ JEE Warrior</div>
+<div style="padding:6px 14px;border-radius:99px;font-size:12px;font-weight:700;background:#7c3aed22;border:1px solid #a78bfa;color:#a78bfa;animation:titleGlow2 2s ease-in-out infinite alternate;">🏛️ IIT Bound</div>
+<div style="padding:6px 14px;border-radius:99px;font-size:12px;font-weight:700;background:#06b6d422;border:1px solid #06b6d4;color:#06b6d4;animation:titleGlow3 2s ease-in-out infinite alternate;">🧬 Sigma Grinder</div>
+</div>
+</div>
+<div style="padding:16px 20px 24px;display:flex;flex-direction:column;gap:10px;border-top:1px solid var(--border);">
+<button onclick="contactAdminForPremium('whatsapp')" style="width:100%;padding:14px;border-radius:14px;border:none;background:linear-gradient(135deg,#25d366,#128c7e);color:#fff;font-family:'DM Sans',sans-serif;font-weight:700;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;">
+<span style="font-size:20px;">💬</span> Contact Admin on WhatsApp
+</button>
+<button onclick="contactAdminForPremium('email')" style="width:100%;padding:14px;border-radius:14px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-family:'DM Sans',sans-serif;font-weight:700;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;">
+<span style="font-size:20px;">📧</span> Contact via Email
+</button>
+<button onclick="closePremiumModal()" style="width:100%;padding:12px;border-radius:14px;border:none;background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer;">Maybe later</button>
+</div>
+</div>
+</div>
+<div id="oathScreen">
+<div class="oath-bg"></div>
+<div class="oath-flame" id="oathFlame">🔥</div>
+<div class="oath-title">THE <span>GRINDER'S</span> OATH</div>
+<div class="oath-lines" id="oathLines">
+<div class="oath-line">"I am not here to pass time..."</div>
+<div class="oath-line highlight">"I am here to change my life."</div>
+<div class="oath-line">"Every task I mark done —"</div>
+<div class="oath-line highlight">"I have truly done it."</div>
+<div class="oath-line">"I will not fake my streak."</div>
+<div class="oath-line">"I will not farm credits."</div>
+<div class="oath-line highlight">"My dream is IIT. And I will earn it."</div>
+<div class="oath-line">"This app will witness my journey."</div>
+</div>
+<div class="oath-divider" id="oathDivider"></div>
+<div class="oath-buttons" id="oathButtons">
+<button class="btn-oath-swear" onclick="takeOath()">⚔️ I Swear On My Dream</button>
+<button class="btn-oath-leave" onclick="breakOath()">I can't make this promise</button>
+</div>
+<div class="oath-goodbye" id="oathGoodbye">
+<div style="font-size:52px">🚪</div>
+<div style="font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:2px;color:#fff;margin-top:8px">Not For You.</div>
+<div style="color:#4a4a6a;font-size:14px;line-height:1.8;max-width:280px;margin-top:8px">This app is built for those willing to earn every credit.<br>Come back when you're ready to commit.</div>
+<button onclick="hardLeave()" style="margin-top:20px;padding:12px 32px;border-radius:12px;border:1px solid #2a2a40;background:transparent;color:#4a4a6a;font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer;">Leave this page</button>
+</div>
+</div>
+
+
+<!-- ASK DOUBT MODAL -->
+<div id="askDoubtModal" style="display:none;position:fixed;inset:0;background:#00000090;z-index:300;align-items:center;justify-content:center;padding:16px;">
+<div style="background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:24px;width:100%;max-width:400px;max-height:90vh;overflow-y:auto;">
+<div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;margin-bottom:16px;">Ask a Doubt 🤔</div>
+<div style="margin-bottom:12px;">
+<div style="font-size:12px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.8px;">Subject</div>
+<select id="doubtSubject" style="width:100%;padding:10px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:14px;outline:none;">
+<option value="Maths">Maths</option>
+<option value="Physics">Physics</option>
+<option value="Chemistry">Chemistry</option>
+<option value="General">General</option>
+</select>
+</div>
+<div style="margin-bottom:12px;">
+<div style="font-size:12px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.8px;">Your Doubt</div>
+<textarea id="doubtText" style="width:100%;height:100px;padding:10px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:14px;outline:none;resize:none;font-family:'DM Sans',sans-serif;" placeholder="Type your doubt here..."></textarea>
+</div>
+<div style="margin-bottom:20px;">
+<div style="font-size:12px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.8px;">Attach Image (optional)</div>
+<div id="doubtImgPreview" style="display:none;margin-bottom:8px;"><img id="doubtPreviewImg" style="width:100%;border-radius:10px;max-height:200px;object-fit:contain;" src=""/></div>
+<label style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;cursor:pointer;">
+<span style="font-size:18px;">📷</span>
+<span style="font-size:13px;color:var(--muted);" id="doubtImgLabel">Tap to attach photo</span>
+<input type="file" id="doubtImgInput" accept="image/*" style="display:none;" onchange="previewDoubtImage(this)"/>
+</label>
+</div>
+<div id="doubtUploadStatus" style="display:none;text-align:center;padding:8px;color:var(--muted);font-size:13px;">Uploading image... ⏳</div>
+<div style="display:flex;gap:10px;">
+<button onclick="closeAskDoubt()" style="flex:1;padding:12px;background:var(--bg3);border:1px solid var(--border);border-radius:12px;color:var(--text);font-weight:600;cursor:pointer;">Cancel</button>
+<button onclick="submitDoubt()" id="submitDoubtBtn" style="flex:1;padding:12px;background:var(--accent);border:none;border-radius:12px;color:#fff;font-weight:700;cursor:pointer;">Post Doubt 🚀</button>
+</div>
+</div>
+</div>
+
+<!-- ANSWERS MODAL -->
+<div id="answersModal" style="display:none;position:fixed;inset:0;background:#00000090;z-index:300;align-items:flex-end;justify-content:center;">
+<div style="background:var(--bg2);border-radius:20px 20px 0 0;padding:24px;width:100%;max-width:500px;max-height:85vh;display:flex;flex-direction:column;">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+<div style="font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;">Answers</div>
+<button onclick="closeAnswers()" style="background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;">✕</button>
+</div>
+<div id="answersList" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:10px;margin-bottom:16px;"></div>
+<div style="display:flex;gap:8px;">
+<input id="answerInput" type="text" style="flex:1;padding:10px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:14px;outline:none;" placeholder="Write your answer..."/>
+<input id="answerImageInput" type="file" accept="image/*" style="display:none;"/>
+<button onclick="document.getElementById('answerImageInput').click()" style="padding:10px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;color:var(--text);font-weight:700;cursor:pointer;" title="Attach image">🖼️</button>
+<button onclick="submitAnswer()" style="padding:10px 16px;background:var(--accent);border:none;border-radius:10px;color:#fff;font-weight:700;cursor:pointer;">Send</button>
+</div>
+</div>
+</div>
+<div id="toast"></div>
+<div id="installBanner">
+<div class="install-text">
+Add to Home Screen
+<small>Use like a real app, no browser needed</small>
+</div>
+<button class="btn-install" onclick="installApp()">Install</button>
+<button class="btn-dismiss" onclick="dismissInstall()">×</button>
+</div>
+<script type="module">
+// Restore theme on load
+if (localStorage.getItem("theme") === "light") document.body.classList.add("light");
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updatePassword, sendPasswordResetEmail, deleteUser } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc, collection, getDocs, onSnapshot, updateDoc, deleteDoc, serverTimestamp, query, orderBy, limit, increment } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+// ── FIREBASE CONFIG ──────────────────────────────────────────────────────────
+const firebaseConfig = {
+apiKey: "AIzaSyBX5yETDzXDKi6LQVzDR66oTlK1q6euIXo",
+authDomain: "jeegrind-190fd.firebaseapp.com",
+projectId: "jeegrind-190fd",
+storageBucket: "jeegrind-190fd.firebasestorage.app",
+messagingSenderId: "893595283056",
+appId: "1:893595283056:web:92328e988b2c2b22068eb5"
+};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+// ── CONSTANTS ────────────────────────────────────────────────────────────────
+const TITLES = [
+{ days:0,   label:"SLEEPER",      emoji:"😴", color:"#6b7280" },
+{ days:1,   label:"STARTER",      emoji:"✏️",  color:"#60a5fa" },
+{ days:3,   label:"GRINDER",      emoji:"⚡",  color:"#34d399" },
+{ days:7,   label:"CONSISTENT",   emoji:"🔥",  color:"#fbbf24" },
+{ days:14,  label:"BEAST MODE",   emoji:"💪",  color:"#f97316" },
+{ days:30,  label:"UNSTOPPABLE",  emoji:"🚀",  color:"#a78bfa" },
+{ days:60,  label:"LEGEND",       emoji:"🏆",  color:"#f43f5e" },
+{ days:100, label:"GODLIKE",      emoji:"☠️",  color:"#e11d48" },
+];
+const SUB_COLOR = { Maths:"var(--math)", Physics:"var(--phys)", Chemistry:"var(--chem)" };
+const SUB_ICON  = { Maths:"∑", Physics:"⚛️", Chemistry:"⚗️" };
+const ADMIN_EMAIL = "foraionly1234@gmail.com";
+const MS_PER_DAY = 24 * 60 * 60 * 1000; // milliseconds in a day
+// ── STATE ────────────────────────────────────────────────────────────────────
+let currentUser = null;
+let userData = null;
+let chosenSubs = [];
+let unsubFeed = null;
+let squadUsersCache = [];
+const todayStr = () => new Date().toISOString().slice(0,10);
+const weekKey  = () => {
+const d = new Date(), jan1 = new Date(d.getFullYear(),0,1);
+return `${d.getFullYear()}-W${Math.ceil(((d-jan1)/86400000+jan1.getDay()+1)/7)}`;
+};
+const getTitle = (s) => [...TITLES].reverse().find(t => s >= t.days) || TITLES[0];
+// ── HELPERS ──────────────────────────────────────────────────────────────────
+function toast(msg, type="ok") {
+  const el = document.getElementById("toast");
+  if (!el) return; // Safety check
+  el.textContent = msg; el.className = `show ${type}`;
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.className = "", 2800);
+}
+let loaderTimeoutId = null;
+
+function showLoader() {
+  const loader = document.getElementById("loader");
+  if (loader) {
+    loader.style.display = "flex";
+    // Timeout after 15 seconds to prevent indefinite freeze
+    loaderTimeoutId = setTimeout(() => {
+      console.warn('Loader timeout - hiding UI loader after 15s');
+      hideLoader();
+      toast('Taking longer than expected...', 'err');
+    }, 15000);
+  }
+}
+
+function hideLoader() { 
+  // Clear any pending timeout
+  if (loaderTimeoutId) {
+    clearTimeout(loaderTimeoutId);
+    loaderTimeoutId = null;
+  }
+  
+  const loader = document.getElementById("loader");
+  if (loader) loader.style.display = "none";
+}
+function showScreen(id) {
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  const screen = document.getElementById(id);
+  if (screen) screen.classList.add("active");
+}
+// ── AUTH TABS ────────────────────────────────────────────────────────────────
+window.switchTab = (tab) => {
+document.querySelectorAll(".auth-tab").forEach((t,i) => t.classList.toggle("active", (i===0&&tab==="signup")||(i===1&&tab==="login")));
+document.getElementById("signupForm").style.display = tab==="signup"?"block":"none";
+document.getElementById("loginForm").style.display  = tab==="login" ?"block":"none";
+document.getElementById("authError").style.display  = "none";
+};
+function showAuthError(msg) {
+const el = document.getElementById("authError");
+el.textContent = msg; el.style.display = "block";
+}
+window.doSignup = async () => {
+const name  = document.getElementById("signupName").value.trim();
+const email = document.getElementById("signupEmail").value.trim();
+const pass  = document.getElementById("signupPass").value;
+if (!name)  return showAuthError("Please enter a display name.");
+if (!email) return showAuthError("Please enter your email.");
+if (pass.length < 6) return showAuthError("Password must be at least 6 characters.");
+const btn = document.getElementById("signupBtn");
+btn.disabled = true; btn.textContent = "Creating…";
+try {
+const cred = await createUserWithEmailAndPassword(auth, email, pass);
+await setDoc(doc(db,"users",cred.user.uid), {
+name, email, streak:0, lastDate:null, credits:0, weekCredits:{}, days:{}, createdAt: serverTimestamp()
+});
+} catch(e) {
+showAuthError(friendlyError(e.code));
+btn.disabled = false; btn.textContent = "Create Account →";
+}
+};
+window.doForgotPassword = async () => {
+const email = document.getElementById("loginEmail")?.value?.trim();
+if (!email) {
+toast("Enter your email first, then tap Forgot password", "err");
+return;
+}
+try {
+await sendPasswordResetEmail(auth, email);
+toast("Reset link sent to " + email + " 📧 Check your inbox!");
+} catch(e) {
+if (e.code === "auth/user-not-found") {
+toast("No account found with this email", "err");
+} else {
+toast("Error sending reset email. Try again.", "err");
+}
+}
+};
+window.doLogin = async () => {
+const email = document.getElementById("loginEmail").value.trim();
+const pass  = document.getElementById("loginPass").value;
+if (!email || !pass) return showAuthError("Please fill in both fields.");
+const btn = document.getElementById("loginBtn");
+btn.disabled = true; btn.textContent = "Logging in…";
+try {
+await signInWithEmailAndPassword(auth, email, pass);
+} catch(e) {
+showAuthError(friendlyError(e.code));
+btn.disabled = false; btn.textContent = "Log In →";
+}
+};
+// ── MENU ──
+let selectedAvatar = '😊';
+window.openMenu = () => {
+const m = document.getElementById('sideMenu');
+const o = document.getElementById('menuOverlay');
+m.style.display = 'flex';
+o.style.display = 'block';
+// update header
+if (userData) {
+document.getElementById('menuAvatar').textContent = userData.avatar || '😊';
+document.getElementById('menuName').textContent = userData.name || '';
+document.getElementById('menuEmail').textContent = currentUser?.email || '';
+}
+// update theme toggle
+const isLight = document.body.classList.contains('light');
+document.getElementById('themeThumb').style.transform = isLight ? 'translateX(20px)' : 'translateX(0)';
+document.getElementById('themeLabel').textContent = isLight ? 'Light Mode' : 'Dark Mode';
+document.getElementById('themeIcon').textContent = isLight ? '☀️' : '🌙';
+};
+window.closeMenu = () => {
+document.getElementById('sideMenu').style.display = 'none';
+document.getElementById('menuOverlay').style.display = 'none';
+};
+window.toggleTheme = () => {
+document.body.classList.toggle('light');
+const isLight = document.body.classList.contains('light');
+localStorage.setItem('theme', isLight ? 'light' : 'dark');
+document.getElementById('themeThumb').style.transform = isLight ? 'translateX(20px)' : 'translateX(0)';
+document.getElementById('themeLabel').textContent = isLight ? 'Light Mode' : 'Dark Mode';
+document.getElementById('themeIcon').textContent = isLight ? '☀️' : '🌙';
+};
+window.openProfileModal = () => {
+closeMenu();
+selectedAvatar = userData?.avatar || '😊';
+document.getElementById('profileAvatarDisplay').textContent = selectedAvatar;
+document.getElementById('profileName').value = userData?.name || '';
+document.getElementById('profilePass').value = '';
+// highlight selected avatar
+document.querySelectorAll('#profileModal span[onclick]').forEach(s => {
+s.style.border = s.textContent === selectedAvatar ? '2px solid var(--accent)' : '2px solid transparent';
+});
+document.getElementById('profileModal').style.display = 'flex';
+};
+window.closeProfileModal = () => {
+document.getElementById('profileModal').style.display = 'none';
+};
+window.openDeleteAccountModal = () => {
+closeMenu();
+document.getElementById('deleteConfirmEmail').value = '';
+document.getElementById('deleteAccountModal').style.display = 'flex';
+};
+window.closeDeleteModal = () => {
+document.getElementById('deleteAccountModal').style.display = 'none';
+};
+window.confirmDeleteAccount = async () => {
+const email = document.getElementById('deleteConfirmEmail').value.trim();
+if (email !== currentUser.email) { toast('Email does not match.', 'err'); return; }
+if (!confirm('⚠️ This will permanently delete your account and all data. Are you sure?')) return;
+try {
+// 1. Delete Auth first (may fail if session is old)
+await deleteUser(currentUser);
+// 2. Auth deleted — safe to delete Firestore doc
+await deleteDoc(doc(db, 'users', currentUser.uid));
+await signOut(auth);
+showScreen('authScreen');
+toast('Account deleted. Goodbye! 👋');
+} catch(e) {
+if (e.code === 'auth/requires-recent-login') {
+toast('For security, please log out and log back in before deleting.', 'err');
+} else {
+toast('Error: ' + (e.message || 'Try again'), 'err');
+}
+}
+};
+window.pickAvatar = (el, emoji) => {
+selectedAvatar = emoji;
+document.getElementById('profileAvatarDisplay').textContent = emoji;
+document.querySelectorAll('#profileModal span[onclick]').forEach(s => {
+s.style.border = s.textContent === emoji ? '2px solid var(--accent)' : '2px solid transparent';
+});
+};
+window.saveProfile = async () => {
+const name = document.getElementById('profileName').value.trim();
+const pass = document.getElementById('profilePass').value;
+const fileInput = document.getElementById('avatarUpload');
+if (!name) { toast('Name cannot be empty', 'err'); return; }
+const saveBtn = document.querySelector('#profileModal button:nth-child(2)');
+const originalText = saveBtn ? saveBtn.textContent : '';
+if (saveBtn) { saveBtn.textContent = 'Saving...'; saveBtn.disabled = true; }
+try {
+userData.name = name;
+if (fileInput && fileInput.files && fileInput.files[0]) {
+const file = fileInput.files[0];
+if (file.size > 5 * 1024 * 1024) { toast('Image too large (max 5MB)', 'err'); return; }
+if (saveBtn) saveBtn.textContent = 'Uploading...';
+const imageUrl = await uploadToCloudinary(file);
+userData.avatarImage = imageUrl;
+userData.avatar = null;
+} else {
+userData.avatar = selectedAvatar;
+userData.avatarImage = null;
+}
+await saveUser();
+if (pass.length >= 6) {
+try { await updatePassword(currentUser, pass); }
+catch(e) { toast('Save OK but password needs re-login to change', 'err'); }
+} else if (pass.length > 0 && pass.length < 6) {
+toast('Password must be at least 6 characters', 'err');
+if (saveBtn) { saveBtn.textContent = originalText; saveBtn.disabled = false; }
+return;
+}
+closeProfileModal();
+toast('Profile updated! 🎉');
+renderHome();
+} catch(e) {
+toast('Error: ' + (e.message || 'Try again'), 'err');
+} finally {
+if (saveBtn) { saveBtn.textContent = originalText; saveBtn.disabled = false; }
+}
+};
+const PREMIUM_FEATURES = [
+{ icon:"👑", name:"Gold Crown Badge",         desc:"Crown next to your name everywhere — feed, leaderboard, admin view." },
+{ icon:"🛡️", name:"Streak Shield",             desc:"1 free streak freeze per week. Miss a day, streak stays safe." },
+{ icon:"📊", name:"Personal Stats Dashboard",  desc:"Weekly study graph, subject-wise task breakdown & progress heatmap." },
+{ icon:"📌", name:"Squad Pinned Message",       desc:"Pin one message at the top of the squad feed. Your words, front and centre." },
+{ icon:"🎨", name:"Profile Accent Color",       desc:"Choose a custom color for your feed card. Stand out in the squad." },
+{ icon:"⚔️", name:"Exclusive Premium Titles",   desc:"Unlock 'JEE Warrior', 'IIT Bound', 'Sigma Grinder' — unseen by free users." },
+{ icon:"⚡", name:"2× Credits Multiplier",      desc:"Earn 20⚡ per task instead of 10. Climb the leaderboard 2x faster." },
+{ icon:"🦸", name:"Special Premium Avatars",    desc:"Exclusive avatar emojis only unlocked with Premium." },
+{ icon:"🚀", name:"Priority Bug Support",       desc:"Your bug reports jump to the top of the queue. Fastest response guaranteed." },
+{ icon:"🏅", name:"Premium-Only Leaderboard",   desc:"Exclusive ranking just among Premium members. Compete at the top." },
+];
+window.showUpgradeInfo = () => {
+closeMenu();
+// populate features list
+const list = document.getElementById('premiumFeaturesList');
+list.innerHTML = PREMIUM_FEATURES.map((f,i) => `
+<div class="premium-feature-row" style="animation:fadeUp .3s ease ${i*0.05}s both;">
+<div class="premium-feature-icon">${f.icon}</div>
+<div>
+<div class="premium-feature-name">${f.name}</div>
+<div class="premium-feature-desc">${f.desc}</div>
+</div>
+</div>
+`).join('');
+document.getElementById('premiumModal').style.display = 'flex';
+};
+window.closePremiumModal = () => {
+document.getElementById('premiumModal').style.display = 'none';
+};
+window.contactAdminForPremium = (method) => {
+const msg = encodeURIComponent(`Hi! I want to upgrade to JEEGrind Premium (₹29/month). My name is ${userData?.name || ''} and my email is ${currentUser?.email || ''}.`);
+if (method === 'whatsapp') {
+// Replace with admin WhatsApp number
+window.open(`https://wa.me/919999999999?text=${msg}`, '_blank');
+} else {
+window.open(`mailto:foraionly1234@gmail.com?subject=Premium Upgrade Request&body=${decodeURIComponent(msg)}`, '_blank');
+}
+toast('Opening contact... 👑');
+};
+window.openBugModal = () => {
+closeMenu();
+document.getElementById('bugText').value = '';
+document.getElementById('bugModal').style.display = 'flex';
+};
+window.closeBugModal = () => {
+document.getElementById('bugModal').style.display = 'none';
+};
+window.submitBug = async () => {
+const text = document.getElementById('bugText').value.trim();
+if (!text) { toast('Please describe the issue', 'err'); return; }
+try {
+await setDoc(doc(db, 'bugReports', Date.now().toString()), {
+uid: currentUser.uid,
+name: userData.name,
+email: currentUser.email,
+text,
+time: serverTimestamp()
+});
+closeBugModal();
+toast('Bug report sent! Thanks 🐛');
+} catch(e) {
+toast('Failed to send report', 'err');
+}
+};
+window.doLogout = async () => {
+if (unsubFeed) unsubFeed();
+await signOut(auth);
+};
+function friendlyError(code) {
+if (code==="auth/email-already-in-use") return "Email already registered. Try logging in.";
+if (code==="auth/invalid-email") return "Invalid email address.";
+if (code==="auth/wrong-password"||code==="auth/invalid-credential") return "Wrong email or password.";
+if (code==="auth/too-many-requests") return "Too many attempts. Try again later.";
+return "Something went wrong. Try again.";
+}
+// ── AUTH STATE ───────────────────────────────────────────────────────────────
+onAuthStateChanged(auth, async (user) => {
+hideLoader();
+if (!user) { showScreen("authScreen"); return; }
+currentUser = user;
+let snap = await getDoc(doc(db,"users",user.uid));
+// New signup race condition fix: DB write may still be in-flight, wait 1s and retry
+if (!snap.exists()) {
+await new Promise(r => setTimeout(r, 1000));
+snap = await getDoc(doc(db,"users",user.uid));
+}
+if (!snap.exists()) { showScreen("authScreen"); return; }
+userData = snap.data();
+// Check oath
+if (!userData.oathTaken) {
+showOathScreen();
+return;
+}
+enterApp();
+});
+function checkBanned() {
+if (userData?.banned) {
+document.getElementById("appScreen").innerHTML = `
+<div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;text-align:center;background:var(--bg)">
+<div style="font-size:64px;margin-bottom:16px">🚫</div>
+<div style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:#ef4444;letter-spacing:2px;margin-bottom:8px">Account Banned</div>
+<div style="color:var(--muted);font-size:14px;line-height:1.6;max-width:280px;margin-bottom:24px">Your account has been suspended by an admin. Contact <a href="mailto:foraionly1234@gmail.com" style="color:var(--accent)">foraionly1234@gmail.com</a> if you think this is a mistake.</div>
+<button onclick="doLogout()" style="margin-top:24px;padding:12px 28px;background:#7f1d1d;border:1px solid #dc2626;border-radius:12px;color:#fca5a5;font-family:'DM Sans',sans-serif;font-weight:700;font-size:14px;cursor:pointer">Log Out</button>
+</div>`;
+return true;
+}
+return false;
+}
+function enterApp() {
+if (checkBanned()) return;
+showScreen("appScreen");
+if (currentUser.email === ADMIN_EMAIL) {
+document.getElementById("navAdmin").style.display = "flex";
+}
+renderHome();
+startFeedListener();
+checkBroadcast();
+loadShoutout();
+}
+// ── OATH SCREEN ───────────────────────────────────────────────────────────────
+function showOathScreen() {
+document.getElementById("oathScreen").classList.add("active");
+const lines = document.querySelectorAll(".oath-line");
+const divider = document.getElementById("oathDivider");
+const buttons = document.getElementById("oathButtons");
+// Reveal each line with staggered delay
+const baseDelay = 1400; // ms before first line
+const lineGap   = 900;  // ms between lines
+lines.forEach((line, i) => {
+setTimeout(() => {
+line.classList.add("revealed");
+}, baseDelay + i * lineGap);
+});
+// Divider after all lines
+const dividerDelay = baseDelay + lines.length * lineGap + 200;
+setTimeout(() => {
+divider.classList.add("revealed");
+}, dividerDelay);
+// Buttons last
+setTimeout(() => {
+buttons.classList.add("revealed");
+}, dividerDelay + 500);
+}
+window.takeOath = async () => {
+try {
+userData.oathTaken = true;
+await saveUser();
+// Animate out oath screen
+const os = document.getElementById("oathScreen");
+os.style.transition = "opacity 0.8s ease";
+os.style.opacity = "0";
+setTimeout(() => {
+os.classList.remove("active");
+os.style.opacity = "";
+os.style.transition = "";
+enterApp();
+}, 800);
+} catch(e) {
+// Even if save fails, let them in — it'll ask again on reload at worst
+document.getElementById("oathScreen").classList.remove("active");
+enterApp();
+}
+};
+window.breakOath = () => {
+// Hide main oath content, show goodbye
+document.getElementById("oathFlame").style.display = "none";
+document.querySelector(".oath-title").style.display = "none";
+document.getElementById("oathLines").style.display = "none";
+document.getElementById("oathDivider").style.display = "none";
+document.getElementById("oathButtons").style.display = "none";
+const goodbye = document.getElementById("oathGoodbye");
+goodbye.classList.add("show");
+goodbye.style.animation = "oathFadeIn 0.8s ease forwards";
+};
+window.hardLeave = () => {
+// Try to close/redirect
+window.location.href = "about:blank";
+};
+// ── SAVE USER ────────────────────────────────────────────────────────────────
+async function saveUser() {
+await setDoc(doc(db,"users",currentUser.uid), userData, { merge:true });
+}
+// ── JEE COUNTDOWN ────────────────────────────────────────────────────────────
+const JEE_DATE = new Date("2027-01-21T09:00:00+05:30"); // JEE Mains 2027 Session 1
+const CD_QUOTES = [
+"Every second counts. Lock in. 🔥",
+"Your rank is being decided right now. 📚",
+"The grind today = the glory on result day. 💪",
+"IIT doesn't wait. Neither should you. ⚡",
+"Tick tock. Your competitors aren't sleeping. 😤",
+];
+function updateCountdown() {
+const now  = new Date();
+const diff = JEE_DATE - now;
+if (diff <= 0) {
+document.getElementById("cdDays").textContent  = "0";
+document.getElementById("cdHrs").textContent   = "00";
+document.getElementById("cdMins").textContent  = "00";
+document.getElementById("cdSecs").textContent  = "00";
+document.getElementById("cdQuote").textContent = "It's exam day! Go crush it! 🏆";
+return;
+}
+const days = Math.floor(diff / 86400000);
+const hrs  = Math.floor((diff % 86400000) / 3600000);
+const mins = Math.floor((diff % 3600000)  / 60000);
+const secs = Math.floor((diff % 60000)    / 1000);
+document.getElementById("cdDays").textContent  = days;
+document.getElementById("cdHrs").textContent   = String(hrs).padStart(2,"0");
+document.getElementById("cdMins").textContent  = String(mins).padStart(2,"0");
+document.getElementById("cdSecs").textContent  = String(secs).padStart(2,"0");
+// rotate quote every minute
+const qi = Math.floor(now.getMinutes() / 3) % CD_QUOTES.length;
+document.getElementById("cdQuote").textContent = CD_QUOTES[qi];
+}
+updateCountdown();
+setInterval(updateCountdown, 1000);
+// ── HOME ─────────────────────────────────────────────────────────────────────
+function renderHome() {
+renderDailyQuote();
+applyPremiumUI();
+const streak = userData.streak || 0;
+const t = getTitle(streak);
+document.getElementById("titleEmoji").textContent = t.emoji;
+document.getElementById("titleName").textContent  = t.label;
+document.getElementById("titleSub").textContent   = streak===0 ? "Start your streak!" : `${streak} day streak!`;
+document.getElementById("titleBanner").style.borderColor = t.color;
+document.getElementById("streakBadge").textContent = `${streak} days`;
+  const pillStreak = document.getElementById("streakPill");
+  const pillCredits = document.getElementById("creditsPill");
+  if (pillStreak) pillStreak.textContent = `🔥 ${streak}d`;
+  if (pillCredits) pillCredits.textContent = `⚡ ${userData.credits||0}`;
+  // titles journey
+  const tg = document.getElementById("titlesGrid");
+  if (tg) tg.innerHTML = TITLES.map(tt => {
+const unlocked = streak >= tt.days;
+return `<div class="title-pill ${unlocked?"unlocked":""}" style="--pill-color:${tt.color}">${tt.emoji} ${tt.label} <span style="opacity:.5;font-size:10px">${tt.days}d</span></div>`;
+}).join("");
+const today = todayStr();
+const dayEntry = userData.days?.[today];
+if (!dayEntry) {
+// show picker
+chosenSubs = [];
+document.getElementById("pickSection").style.display = "block";
+document.getElementById("tasksSection").style.display = "none";
+updateSubCards();
+} else {
+document.getElementById("pickSection").style.display = "none";
+document.getElementById("tasksSection").style.display = "block";
+renderTasks(dayEntry);
+}
+}
+window.toggleSub = (sub) => {
+if (chosenSubs.includes(sub)) { chosenSubs = chosenSubs.filter(s=>s!==sub); }
+else if (chosenSubs.length < 3) { chosenSubs.push(sub); }
+updateSubCards();
+};
+function updateSubCards() {
+["Maths","Physics","Chemistry"].forEach(s => {
+const card = document.getElementById(`sub${s}`);
+const sel  = chosenSubs.includes(s);
+const full = chosenSubs.length===3 && !sel;
+card.classList.toggle("selected", sel);
+card.classList.toggle("disabled", full);
+});
+document.getElementById("lockSubBtn").disabled = chosenSubs.length < 1;
+}
+window.lockSubjects = async () => {
+if (chosenSubs.length < 1) return;
+const today = todayStr();
+const subjects = {};
+chosenSubs.forEach(s => { subjects[s] = { tasks:[] }; });
+if (!userData.days) userData.days = {};
+userData.days[today] = { selectedSubs: [...chosenSubs], subjects, finished:false };
+await saveUser();
+renderHome();
+toast("Subjects locked! Add your tasks 📝");
+};
+function renderTasks(dayEntry) {
+const ts = document.getElementById("tasksSection");
+const finished = dayEntry.finished;
+let html = "";
+dayEntry.selectedSubs.forEach(sub => {
+const tasks = dayEntry.subjects[sub]?.tasks || [];
+const done  = tasks.filter(t=>t.done).length;
+const colVar = sub==="Maths"?"var(--math)":sub==="Physics"?"var(--phys)":"var(--chem)";
+html += `<div class="task-card" style="--sub-color:${colVar}">
+<div class="task-card-header">
+<span class="task-card-icon">${SUB_ICON[sub]}</span>
+<span class="task-card-name">${sub}</span>
+<span class="task-progress" style="background:${colVar}22;color:${colVar}">${done}/${tasks.length}</span>
+</div>
+${tasks.map((t,i) => `
+<div class="task-item ${t.done?"done":""}" onclick="${finished?"":"completeTask('"+sub+"',"+i+")"}">
+<div class="task-check">${t.done?"✓":""}</div>
+<span class="task-text">${t.text}</span>
+${t.done?'<span class="task-credits">+10⚡</span>':""}
+${!finished?`<div class="task-actions">
+<button class="task-btn-edit" onclick="event.stopPropagation();editTask('${sub}',${i})">✏️</button>
+<button class="task-btn-delete" onclick="event.stopPropagation();deleteTask('${sub}',${i})">🗑️</button>
+</div>`:""}
+</div>
+`).join("")}
+${!finished?`
+<div class="add-task-row">
+<input class="task-input" id="inp_${sub}" placeholder="Add ${sub} objective…" onkeydown="if(event.key==='Enter')addTask('${sub}')"/>
+<button class="btn-add" style="background:${colVar}" onclick="addTask('${sub}')">Add</button>
+</div>
+`:""}
+</div>`;
+});
+// finish / done
+const allTasksDone = dayEntry.selectedSubs.every(s => (dayEntry.subjects[s]?.tasks||[]).length > 0 && (dayEntry.subjects[s].tasks||[]).every(t=>t.done));
+if (!finished) {
+html += `<button class="btn-finish" onclick="finishDay()"
+style="background:${allTasksDone?"#16a34a":"var(--bg3)"};color:${allTasksDone?"#fff":"var(--muted)"};border:2px solid ${allTasksDone?"#16a34a":"var(--border)"}">
+${allTasksDone?"🏆 Lock Day & Claim +20⚡ Streak Bonus":"Complete tasks to lock the day"}
+</button>`;
+} else {
+html += `<div class="day-done-banner">
+<div style="font-size:32px">🏆</div>
+<div style="font-weight:800;color:#4ade80;font-size:16px;margin-top:8px">Day Locked! Streak: ${userData.streak} 🔥</div>
+<div style="color:var(--muted);font-size:12px;margin-top:4px">Come back tomorrow to keep the streak alive!</div>
+</div>`;
+}
+ts.innerHTML = html;
+}
+window.addTask = async (sub) => {
+const inp  = document.getElementById(`inp_${sub}`);
+const text = inp?.value?.trim();
+if (!text) return;
+const today = todayStr();
+userData.days[today].subjects[sub].tasks.push({ text, done:false });
+await saveUser();
+inp.value = "";
+renderTasks(userData.days[today]);
+};
+window.completeTask = async (sub, idx) => {
+const today = todayStr();
+const task  = userData.days[today].subjects[sub].tasks[idx];
+if (task.done) return;
+task.done = true;
+// Check shop multipliers
+const now = Date.now();
+const has2xCredits = (userData?.shopActive?.['2x_credits_24h']||0) > now;
+const has2xXP      = (userData?.shopActive?.xp_boost_uses||0) > 0;
+const hasDblTmrw   = userData?.shopActive?.double_tomorrow === todayStr();
+let creditGain = has2xCredits || hasDblTmrw ? 20 : 10;
+let xpGain     = has2xXP ? 50 : 25;
+if (has2xXP) {
+userData.shopActive.xp_boost_uses = Math.max(0, (userData.shopActive.xp_boost_uses||0) - 1);
+}
+userData.credits = (userData.credits||0) + creditGain;
+userData.xp = (userData.xp||0) + xpGain;
+const wk = weekKey();
+if (!userData.weekCredits) userData.weekCredits = {};
+userData.weekCredits[wk] = (userData.weekCredits[wk]||0) + creditGain;
+await saveUser();
+const pillEl = document.getElementById("creditsPill");
+if (pillEl) pillEl.textContent = `⚡ ${userData.credits}`;
+const bonus = (has2xCredits||hasDblTmrw) ? ' 🔥2x!' : '';
+toast(`+${creditGain}⚡ +${xpGain}XP${bonus}`);
+renderTasks(userData.days[today]);
+};
+window.editTask = (sub, idx) => {
+const today = todayStr();
+const task  = userData.days[today].subjects[sub].tasks[idx];
+const newText = prompt(`Edit ${sub} objective:`, task.text);
+if (newText && newText.trim()) {
+task.text = newText.trim();
+saveUser().then(() => {
+renderTasks(userData.days[today]);
+toast("Objective updated! ✏️");
+});
+}
+};
+window.deleteTask = async (sub, idx) => {
+const today = todayStr();
+if (confirm("Delete this objective? This action cannot be undone.")) {
+userData.days[today].subjects[sub].tasks.splice(idx, 1);
+await saveUser();
+renderTasks(userData.days[today]);
+toast("Objective deleted. 🗑️");
+}
+};
+window.finishDay = async () => {
+const today = todayStr();
+const entry = userData.days[today];
+if (!entry || entry.finished) return;
+const anyDone = entry.selectedSubs.some(s => entry.subjects[s]?.tasks?.some(t=>t.done));
+if (!anyDone) { toast("Complete at least 1 task first!", "err"); return; }
+const last = userData.lastDate;
+const yesterday = new Date(); yesterday.setDate(yesterday.getDate()-1);
+const yStr = yesterday.toISOString().slice(0,10);
+let newStreak;
+if (last===yStr || last===today) {
+newStreak = (userData.streak||0) + 1;
+} else if (userData.streakShield || (userData.shopOwned?.streak_shield_3||0) > 0) {
+// shield absorbs the break
+if (userData.streakShield) { userData.streakShield = false; }
+else { userData.shopOwned.streak_shield_3 -= 1; }
+newStreak = (userData.streak||0) + 1;
+toast('🛡️ Streak Shield used! Streak protected!');
+} else {
+newStreak = 1;
+}
+entry.finished = true;
+userData.streak   = newStreak;
+userData.lastDate = today;
+userData.credits  = (userData.credits||0) + 20;
+userData.xp = (userData.xp || 0) + 50; // 50 XP for locking day
+const wk = weekKey();
+if (!userData.weekCredits) userData.weekCredits = {};
+userData.weekCredits[wk] = (userData.weekCredits[wk]||0) + 20;
+await saveUser();
+toast(`🏆 Day locked! +50 XP | Streak: ${newStreak} days!`);
+renderHome();
+};
+// ── FEED ─────────────────────────────────────────────────────────────────────
+function startFeedListener() {
+if (unsubFeed) unsubFeed();
+const usersQ = query(collection(db,"users"), orderBy("credits","desc"), limit(50));
+unsubFeed = onSnapshot(usersQ, (snap) => {
+const users = [];
+snap.forEach(d => users.push({ uid:d.id, ...d.data() }));
+renderFeed(users);
+renderBoard(users);
+// Update own data only from remote changes (not our own writes)
+// Use hasPendingWrites to avoid re-rendering on our own saves
+const myDoc = snap.docs.find(d => d.id === currentUser?.uid);
+if (myDoc && !myDoc.metadata.hasPendingWrites) {
+userData = { uid: myDoc.id, ...myDoc.data() };
+renderHome();
+}
+loadRival(users);
+});
+}
+function renderFeed(users) {
+const today = todayStr();
+const sorted = [...users].sort((a,b) => (b.days?.[today]?1:0)-(a.days?.[today]?1:0));
+const fl = document.getElementById("feedList");
+if (!fl) return;
+fl.innerHTML = sorted.map(u => {
+const isMe = u.uid === currentUser.uid;
+const de   = u.days?.[today];
+const t    = getTitle(u.streak||0);
+const wkC  = u.weekCredits?.[weekKey()]||0;
+let status = `<span class="feed-status" style="background:#7f1d1d33;color:#ef4444">Not started</span>`;
+if (de?.finished) status = `<span class="feed-status" style="background:#05260e;color:#4ade80">✓ Locked</span>`;
+else if (de) status = `<span class="feed-status" style="background:#78350f33;color:#fbbf24">In progress</span>`;
+let tasksHtml = "";
+if (de) {
+tasksHtml = de.selectedSubs.map(sub => {
+const tasks  = de.subjects?.[sub]?.tasks || [];
+const done   = tasks.filter(t => t.done).length;
+const total  = tasks.length;
+const colVar = sub==="Maths"?"var(--math)":sub==="Physics"?"var(--phys)":"var(--chem)";
+if (isMe) {
+// Full task list for yourself
+return `<div style="margin-bottom:10px">
+<div style="font-size:12px;font-weight:700;color:${colVar};margin-bottom:6px">${SUB_ICON[sub]} ${sub}</div>
+${total===0?'<p style="font-size:12px;color:var(--muted)">No tasks yet</p>':tasks.map(tk=>`
+<div style="display:flex;align-items:center;gap:8px;font-size:13px;color:${tk.done?"var(--muted)":"var(--text)"};text-decoration:${tk.done?"line-through":"none"};margin-bottom:4px">
+<span style="font-size:10px;color:${tk.done?"#4ade80":"var(--muted)"}">${tk.done?"✓":"○"}</span>${tk.text}
+</div>`).join("")}
+</div>
+`;
+} else {
+// Only subject name + task count for others — task text is private
+return `<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--bg3);border-radius:10px;margin-bottom:8px">
+<span style="font-size:13px;font-weight:700;color:${colVar}">${SUB_ICON[sub]} ${sub}</span>
+<span style="font-size:12px;color:var(--muted)">${done}/${total} done</span>
+</div>`;
+}
+}).join("");
+}
+const avatarBg = u.avatarImage ? `url('${u.avatarImage}')` : (isMe?"#7c3aed33":de?"#ff6b3522":"var(--bg3)");
+const avatarCol = isMe?"#a78bfa":de?"#ff6b35":"var(--muted)";
+const isPrem = !!u.premium;
+const avatarContent = u.avatarImage ? '' : (u.avatar||(u.name||"?")[0].toUpperCase());
+return `<div class="feed-card ${isMe?"me":""} ${de?"active-today":""}" style="${isPrem?"border-color:var(--gold);":""}">
+<div class="feed-header">
+<div class="avatar ${isPrem?"premium-avatar":""}" style="background:${avatarBg};color:${u.avatarImage?"transparent":avatarCol}">${avatarContent}</div>
+<div>
+<div class="feed-name">${u.name||"Unknown"} ${isPrem?'<span class="premium-badge">👑 PRO</span>':""} ${isMe?'<span style="font-size:11px;color:var(--accent2)">(you)</span>':""}</div>
+<div class="feed-title-label" style="color:${t.color}">${t.emoji} ${t.label} • 🔥${u.streak||0} • ⚡${wkC} this week</div>
+</div>
+${status}
+</div>
+${de?`<div style="font-size:11px;color:var(--muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:.8px">Studying: ${de.selectedSubs.join(" + ")}</div>${tasksHtml}`:""}
+</div>`;
+}).join("");
+}
+function renderBoard(users) {
+const wk     = weekKey();
+const sorted = [...users].sort((a,b) => (b.weekCredits?.[wk]||0)-(a.weekCredits?.[wk]||0));
+const bl = document.getElementById("boardList");
+if (!bl) return;
+const medals = ["🥇","🥈","🥉"];
+bl.innerHTML = sorted.map((u,i) => {
+const isMe  = u.uid===currentUser.uid;
+const wkC   = u.weekCredits?.[wk]||0;
+const t     = getTitle(u.streak||0);
+return `<div class="board-card" style="${isMe?"border-color:var(--accent2)":""}${i===0?";background:color-mix(in srgb,var(--gold) 5%,var(--bg2))":""}">
+<div class="board-rank" style="color:${i===0?"var(--gold)":i===1?"#94a3b8":i===2?"#cd7f32":"var(--muted)"}">${medals[i]||`#${i+1}`}</div>
+<div class="avatar" style="background:${u.avatarImage?`url('${u.avatarImage}')`:isMe?"#7c3aed33":"var(--bg3)"};color:${u.avatarImage?"transparent":isMe?"#a78bfa":"var(--muted)"};width:38px;height:38px;font-size:15px;border-radius:11px">${u.avatarImage?"":(u.name||"?")[0].toUpperCase()}</div>
+<div class="board-info">
+<div class="board-name">${u.name||"Unknown"} ${isMe?'<span style="font-size:11px;color:var(--accent2)">(you)</span>':""}</div>
+<div class="board-title" style="color:${t.color}">${t.emoji} ${t.label} • 🔥${u.streak||0}d</div>
+</div>
+<div class="board-credits">
+<div class="board-num">⚡${wkC}</div>
+<div class="board-label">this week</div>
+</div>
+</div>`;
+}).join("");
+}
+// ── ADMIN ─────────────────────────────────────────────────────────────────────
+let adminUsers = [];
+let adminUsersFiltered = [];
+window.switchAdminTab = (tab) => {
+document.querySelectorAll(".admin-tab").forEach((t,i)=>{
+const tabs = ["members","bugs","broadcast","nuke"];
+t.classList.toggle("active", tabs[i]===tab);
+});
+document.querySelectorAll(".admin-tab-panel").forEach(p => p.classList.remove("active"));
+document.getElementById(`adminTab_${tab}`).classList.add("active");
+if (tab==="bugs") loadBugReports();
+if (tab==="broadcast") loadBroadcastStatus();
+if (tab==="nuke") {
+const totalCreds = adminUsers.reduce((s,u)=>s+(u.credits||0),0);
+const el = document.getElementById("adminNukeStats");
+if (el) el.textContent = `Total credits in system: ⚡ ${totalCreds} across ${adminUsers.length} members`;
+}
+};
+window.filterAdminMembers = () => {
+const q = (document.getElementById("adminSearch")?.value||"").toLowerCase();
+adminUsersFiltered = q ? adminUsers.filter(u=>(u.name||"").toLowerCase().includes(q)||(u.email||"").toLowerCase().includes(q)) : adminUsers;
+renderAdminMemberCards(adminUsersFiltered);
+};
+function renderAdmin() {
+if (!currentUser || currentUser.email !== ADMIN_EMAIL) return;
+const al = document.getElementById("adminList");
+const as = document.getElementById("adminStats");
+if (!al || !as) return;
+al.innerHTML = `<div style="text-align:center;padding:30px;color:var(--muted)">Loading...</div>`;
+getDocs(collection(db,"users")).then(snap => {
+adminUsers = [];
+snap.forEach(d => adminUsers.push({ uid:d.id, ...d.data() }));
+adminUsersFiltered = adminUsers;
+const today      = todayStr();
+const wk         = weekKey();
+const totalUsers  = adminUsers.length;
+const activeToday = adminUsers.filter(u => u.days?.[today]).length;
+const lockedToday = adminUsers.filter(u => u.days?.[today]?.finished).length;
+const premiumCount= adminUsers.filter(u => u.premium).length;
+as.innerHTML = `
+<div class="admin-stat"><div class="admin-stat-num">${totalUsers}</div><div class="admin-stat-label">Members</div></div>
+<div class="admin-stat"><div class="admin-stat-num" style="color:var(--gold)">${activeToday}</div><div class="admin-stat-label">Active</div></div>
+<div class="admin-stat"><div class="admin-stat-num" style="color:#4ade80">${lockedToday}</div><div class="admin-stat-label">Locked</div></div>
+<div class="admin-stat"><div class="admin-stat-num" style="color:#f59e0b">${premiumCount}</div><div class="admin-stat-label">Premium</div></div>
+`;
+renderAdminMemberCards(adminUsers);
+});
+}
+function renderAdminMemberCards(users) {
+const al = document.getElementById("adminList");
+if (!al) return;
+const today = todayStr();
+const wk    = weekKey();
+if (!users.length) {
+al.innerHTML = `<div style="text-align:center;padding:30px;color:var(--muted)">No members found.</div>`;
+return;
+}
+al.innerHTML = users.slice().sort((a,b)=>(b.credits||0)-(a.credits||0)).map((u,i) => {
+const t       = getTitle(u.streak||0);
+const de      = u.days?.[today];
+const wkC     = u.weekCredits?.[wk]||0;
+const allDays = Object.keys(u.days||{}).length;
+const isMe    = u.uid === currentUser.uid;
+const isBanned   = !!u.banned;
+const isPremium  = !!u.premium;
+let tasksHtml = "";
+if (de?.selectedSubs) {
+tasksHtml = de.selectedSubs.map(sub => {
+const tasks = de.subjects?.[sub]?.tasks||[];
+const done  = tasks.filter(t=>t.done).length;
+const colVar = sub==="Maths"?"var(--math)":sub==="Physics"?"var(--phys)":"var(--chem)";
+return `<div style="margin-bottom:10px">
+<div style="font-size:12px;font-weight:700;color:${colVar};margin-bottom:6px">${SUB_ICON[sub]} ${sub} (${done}/${tasks.length} done)</div>
+${tasks.map(tk=>`<div style="display:flex;gap:8px;font-size:13px;color:${tk.done?"var(--muted)":"var(--text)"};text-decoration:${tk.done?"line-through":"none"};margin-bottom:4px;padding-left:4px">
+<span style="color:${tk.done?"#4ade80":"var(--muted)"}">${tk.done?"✓":"○"}</span>${tk.text}
+</div>`).join("")}
+</div>`;
+}).join("");
+}
+const badges = `${isPremium?'<span style="font-size:10px;background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b66;border-radius:6px;padding:2px 6px;margin-left:4px">👑 PRO</span>':''}${isBanned?'<span style="font-size:10px;background:#ef444422;color:#ef4444;border:1px solid #ef444466;border-radius:6px;padding:2px 6px;margin-left:4px">🚫 BANNED</span>':''}`;
+return `<div class="admin-card${isBanned?" banned":""}${isPremium?" premium":""}">
+<div class="admin-card-header" onclick="toggleAdminCard('ac${i}')">
+<div class="avatar" style="background:${isMe?"#7c3aed33":isPremium?"#f59e0b22":"var(--bg3)"};color:${isMe?"#a78bfa":isPremium?"#f59e0b":"var(--accent)"};width:36px;height:36px;font-size:14px;border-radius:10px">${u.avatar||(u.name||"?")[0].toUpperCase()}</div>
+<div style="flex:1;min-width:0">
+<div style="font-weight:700;font-size:14px;display:flex;align-items:center;flex-wrap:wrap;gap:2px">${u.name||"Unknown"}${badges}${isMe?'<span style="font-size:10px;color:var(--accent2);margin-left:4px">(you)</span>':""}</div>
+<div style="font-size:11px;color:${t.color};margin-top:1px">${t.emoji} ${t.label} • 🔥${u.streak||0}d • ⚡${u.credits||0}</div>
+</div>
+<div style="font-size:10px;color:${de?.finished?"#4ade80":de?"#fbbf24":"#ef4444"};font-weight:700;font-family:'JetBrains Mono',monospace;margin-right:6px;flex-shrink:0">
+${de?.finished?"✓ LOCKED":de?"ACTIVE":"ABSENT"}
+</div>
+<span style="color:var(--muted);font-size:13px" id="adminArrow_ac${i}">▼</span>
+</div>
+<div class="admin-card-body" id="adminBody_ac${i}">
+<div style="padding-top:12px">
+<div class="admin-detail-row"><span class="admin-detail-label">Email</span><span class="admin-detail-val" style="font-size:10px;word-break:break-all">${u.email||"—"}</span></div>
+<div class="admin-detail-row"><span class="admin-detail-label">Total Days Logged</span><span class="admin-detail-val">${allDays} days</span></div>
+<div class="admin-detail-row"><span class="admin-detail-label">This Week</span><span class="admin-detail-val">⚡ ${wkC}</span></div>
+<div class="admin-detail-row"><span class="admin-detail-label">All-time Credits</span><span class="admin-detail-val">⚡ ${u.credits||0}</span></div>
+<div class="admin-detail-row"><span class="admin-detail-label">Streak</span><span class="admin-detail-val">🔥 ${u.streak||0} days</span></div>
+<div class="admin-detail-row"><span class="admin-detail-label">Last Active</span><span class="admin-detail-val">${u.lastDate||"Never"}</span></div>
+<div class="admin-detail-row"><span class="admin-detail-label">Premium</span><span class="admin-detail-val" style="color:${isPremium?"#f59e0b":"var(--muted)"}">${isPremium?"👑 Active":"—"}</span></div>
+<div class="admin-detail-row"><span class="admin-detail-label">Status</span><span class="admin-detail-val" style="color:${isBanned?"#ef4444":"#4ade80"}">${isBanned?"🚫 Banned":"✓ Active"}</span></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+<div>
+<div style="font-size:11px;color:var(--muted);margin-bottom:4px">Add Credits</div>
+<div style="display:flex;gap:6px">
+<input id="addCredInput_${u.uid}" type="number" placeholder="100" style="flex:1;padding:7px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:12px;outline:none;width:0"/>
+<button class="admin-action-btn green" onclick="adminAddCredits('${u.uid}','${u.name}')">+⚡</button>
+</div>
+</div>
+<div>
+<div style="font-size:11px;color:var(--muted);margin-bottom:4px">Set Streak</div>
+<div style="display:flex;gap:6px">
+<input id="setStreakInput_${u.uid}" type="number" placeholder="7" style="flex:1;padding:7px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:12px;outline:none;width:0"/>
+<button class="admin-action-btn purple" onclick="adminSetStreak('${u.uid}','${u.name}')">Set</button>
+</div>
+</div>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px">
+${isPremium
+? `<button class="admin-action-btn gold" onclick="adminRevokePremium('${u.uid}','${u.name}')">👑 Revoke Premium</button>`
+: `<button class="admin-action-btn gold" onclick="adminGrantPremium('${u.uid}','${u.name}')">👑 Grant Premium</button>`}
+${isBanned
+? `<button class="admin-action-btn green" onclick="adminUnban('${u.uid}','${u.name}')">✅ Unban</button>`
+: (isMe?"": `<button class="admin-action-btn danger" onclick="adminBan('${u.uid}','${u.name}')">🚫 Ban</button>`)}
+<button class="admin-action-btn" onclick="adminResetCredits('${u.uid}','${u.name}')">⚡ Reset Credits</button>
+<button class="admin-action-btn" onclick="adminResetStreak('${u.uid}','${u.name}')">🔥 Reset Streak</button>
+<button class="admin-action-btn" onclick="adminClearUserToday('${u.uid}','${u.name}')">📅 Clear Today</button>
+${!isMe?`<button class="admin-action-btn danger" onclick="adminDeleteUser('${u.uid}','${u.name}')">🗑️ Delete</button>`:""}
+</div>
+${de ? `<div style="margin-top:12px"><div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px">Today's Tasks</div>${tasksHtml}</div>`
+: `<div style="padding:10px 0;color:var(--muted);font-size:13px">No activity logged today.</div>`}
+</div>
+</div>
+</div>`;
+}).join("");
+}
+window.toggleAdminCard = (id) => {
+const body  = document.getElementById(`adminBody_${id}`);
+const arrow = document.getElementById(`adminArrow_${id}`);
+if (!body) return;
+body.classList.toggle("open");
+arrow.textContent = body.classList.contains("open") ? "▲" : "▼";
+};
+// ── ADMIN ACTIONS ─────────────────────────────────────────────────────────────
+window.adminGrantPremium = async (uid, name) => {
+if (!confirm(`Grant Premium to ${name}?`)) return;
+await updateDoc(doc(db,"users",uid), { premium: true, premiumGrantedAt: new Date().toISOString() });
+toast(`${name} is now Premium 👑`); renderAdmin();
+};
+window.adminRevokePremium = async (uid, name) => {
+if (!confirm(`Revoke Premium from ${name}?`)) return;
+await updateDoc(doc(db,"users",uid), { premium: false });
+toast(`${name}'s Premium revoked`); renderAdmin();
+};
+window.adminBan = async (uid, name) => {
+if (!confirm(`Ban ${name}? They won't be able to use the app.`)) return;
+await updateDoc(doc(db,"users",uid), { banned: true });
+toast(`${name} banned 🚫`); renderAdmin();
+};
+window.adminUnban = async (uid, name) => {
+await updateDoc(doc(db,"users",uid), { banned: false });
+toast(`${name} unbanned ✅`); renderAdmin();
+};
+window.adminAddCredits = async (uid, name) => {
+const inp = document.getElementById(`addCredInput_${uid}`);
+const amt = parseInt(inp?.value||0);
+if (!amt || amt<=0) { toast("Enter a valid amount","err"); return; }
+const snap = await getDoc(doc(db,"users",uid));
+if (!snap.exists()) return;
+const cur = snap.data().credits||0;
+await updateDoc(doc(db,"users",uid), { credits: cur+amt });
+toast(`+⚡${amt} added to ${name} ✓`); renderAdmin();
+};
+window.adminSetStreak = async (uid, name) => {
+const inp = document.getElementById(`setStreakInput_${uid}`);
+const val = parseInt(inp?.value||0);
+if (isNaN(val)||val<0) { toast("Enter a valid streak","err"); return; }
+await updateDoc(doc(db,"users",uid), { streak: val });
+toast(`${name}'s streak set to ${val} 🔥`); renderAdmin();
+};
+window.adminDeleteUser = async (uid, name) => {
+if (!confirm(`Delete ${name}'s account and ALL data? Cannot be undone.`)) return;
+await deleteDoc(doc(db,"users",uid));
+toast(`${name}'s data deleted ✓`); renderAdmin();
+};
+window.adminResetCredits = async (uid, name) => {
+if (!confirm(`Reset ${name}'s credits to 0?`)) return;
+await updateDoc(doc(db,"users",uid), { credits:0, weekCredits:{} });
+toast(`${name}'s credits reset ✓`); renderAdmin();
+};
+window.adminResetStreak = async (uid, name) => {
+if (!confirm(`Reset ${name}'s streak to 0?`)) return;
+await updateDoc(doc(db,"users",uid), { streak:0, lastDate:null });
+toast(`${name}'s streak reset ✓`); renderAdmin();
+};
+window.adminClearUserToday = async (uid, name) => {
+if (!confirm(`Clear ${name}'s today entry?`)) return;
+const today = todayStr();
+const snap = await getDoc(doc(db,"users",uid));
+if (!snap.exists()) return;
+const days = { ...(snap.data().days||{}) };
+delete days[today];
+await updateDoc(doc(db,"users",uid), { days });
+toast(`${name}'s today cleared ✓`); renderAdmin();
+};
+window.adminResetAllCredits = async () => {
+if (!confirm("Reset ALL members' credits to 0? Cannot be undone!")) return;
+await Promise.all(adminUsers.map(u => updateDoc(doc(db,"users",u.uid), { credits:0, weekCredits:{} })));
+toast("All credits reset ✓"); renderAdmin();
+};
+window.adminResetAllStreaks = async () => {
+if (!confirm("Reset ALL streaks to 0? Cannot be undone!")) return;
+await Promise.all(adminUsers.map(u => updateDoc(doc(db,"users",u.uid), { streak:0, lastDate:null })));
+toast("All streaks reset ✓"); renderAdmin();
+};
+window.adminClearAllToday = async () => {
+if (!confirm("Clear today's data for ALL members?")) return;
+const today = todayStr();
+await Promise.all(adminUsers.map(async u => {
+const days = { ...(u.days||{}) }; delete days[today];
+return updateDoc(doc(db,"users",u.uid), { days });
+}));
+toast("All today's data cleared ✓"); renderAdmin();
+};
+// ── BUG REPORTS ───────────────────────────────────────────────────────────────
+window.loadBugReports = async () => {
+const bl = document.getElementById("bugList");
+if (!bl) return;
+bl.innerHTML = `<div style="text-align:center;padding:30px;color:var(--muted)">Loading…</div>`;
+try {
+const snap = await getDocs(query(collection(db,"bugReports"), orderBy("time","desc"), limit(50)));
+if (snap.empty) { bl.innerHTML = `<div style="text-align:center;padding:30px;color:var(--muted)">No bug reports yet 🎉</div>`; return; }
+bl.innerHTML = "";
+snap.forEach(d => {
+const r = d.data();
+const date = r.time?.toDate ? r.time.toDate().toLocaleString() : "Unknown time";
+bl.innerHTML += `<div class="bug-card">
+<div class="bug-card-meta">📅 ${date} &nbsp;|&nbsp; 👤 ${r.name||"Unknown"} &nbsp;|&nbsp; 📧 ${r.email||"—"}</div>
+<div class="bug-card-text">${r.text||"(empty)"}</div>
+<button class="admin-action-btn danger" style="margin-top:10px;font-size:11px" onclick="deleteBugReport('${d.id}')">🗑️ Delete</button>
+</div>`;
+});
+} catch(e) { bl.innerHTML = `<div style="color:#ef4444;padding:20px">Error: ${e.message}</div>`; }
+};
+window.deleteBugReport = async (id) => {
+await deleteDoc(doc(db,"bugReports",id));
+toast("Bug report deleted"); loadBugReports();
+};
+// ── BROADCAST ─────────────────────────────────────────────────────────────────
+window.loadBroadcastStatus = async () => {
+try {
+const snap = await getDoc(doc(db,"config","broadcast"));
+const el   = document.getElementById("lastBroadcastInfo");
+if (!el) return;
+if (snap.exists() && snap.data().message) {
+el.innerHTML = `<span style="color:#4ade80">✓ Active broadcast:</span> "${snap.data().message}"`;
+const ta = document.getElementById("broadcastText");
+    if (ta && !ta.value) ta.value = snap.data().message;
+    } else {
+      el.textContent = "No active broadcast.";
+    }
+  } catch(e) {
+    console.error('loadBroadcastStatus error:', e);
+  }
+};
+window.sendBroadcast = async () => {
+const msg = document.getElementById("broadcastText")?.value?.trim();
+if (!msg) { toast("Type a message first","err"); return; }
+await setDoc(doc(db,"config","broadcast"), { message: msg, sentAt: new Date().toISOString(), sentBy: currentUser.email });
+toast("Broadcast sent to all users 📢");
+loadBroadcastStatus();
+};
+window.clearBroadcast = async () => {
+if (!confirm("Remove the current broadcast banner for all users?")) return;
+await setDoc(doc(db,"config","broadcast"), { message: "", sentAt: null });
+const ta = document.getElementById("broadcastText");
+if (ta) ta.value = "";
+toast("Broadcast cleared ✓");
+loadBroadcastStatus();
+};
+// ── BROADCAST BANNER (shown to all users) ────────────────────────────────────
+async function checkBroadcast() {
+try {
+const snap = await getDoc(doc(db,"config","broadcast"));
+if (snap.exists() && snap.data().message) {
+const banner = document.getElementById("broadcastBanner");
+const text   = document.getElementById("broadcastBannerText");
+if (banner && text) {
+text.textContent = snap.data().message;
+banner.style.display = "flex";
+}
+}
+} catch(e) {}
+}
+window.dismissBroadcast = () => {
+const banner = document.getElementById("broadcastBanner");
+if (banner) banner.style.display = "none";
+};
+// ── PROGRESS PAGE ─────────────────────────────────────────────────────────────
+const BADGES = [
+{ id:"first_day",   icon:"🌅", name:"First Step",    desc:"Log your first day",                check: u => Object.keys(u.days||{}).length >= 1 },
+{ id:"streak3",     icon:"🔥", name:"3-Day Fire",     desc:"Reach a 3 day streak",              check: u => (u.streak||0) >= 3 },
+{ id:"streak7",     icon:"⚡", name:"Week Warrior",   desc:"Reach a 7 day streak",              check: u => (u.streak||0) >= 7 },
+{ id:"streak30",    icon:"🚀", name:"Month Beast",    desc:"Reach a 30 day streak",             check: u => (u.streak||0) >= 30 },
+{ id:"cred100",     icon:"💰", name:"Centurion",      desc:"Earn 100 credits",                  check: u => (u.credits||0) >= 100 },
+{ id:"cred500",     icon:"💎", name:"Credit King",    desc:"Earn 500 credits",                  check: u => (u.credits||0) >= 500 },
+{ id:"cred1000",    icon:"👑", name:"1K Club",        desc:"Earn 1000 credits",                 check: u => (u.credits||0) >= 1000 },
+{ id:"all3subs",    icon:"🧪", name:"Tri-Master",     desc:"Study all 3 subjects in one day",   check: u => Object.values(u.days||{}).some(d => d.selectedSubs?.length===3) },
+{ id:"tasks5",      icon:"📝", name:"Task Crusher",   desc:"Complete 5 tasks in one day",       check: u => Object.values(u.days||{}).some(d => {
+let total=0; Object.values(d.subjects||{}).forEach(s=>{ total+=s.tasks?.filter(t=>t.done).length||0; }); return total>=5;
+})},
+{ id:"days10",      icon:"📅", name:"10-Day Club",    desc:"Log 10 total days",                 check: u => Object.keys(u.days||{}).length >= 10 },
+{ id:"days30",      icon:"🏆", name:"30-Day Legend",  desc:"Log 30 total days",                 check: u => Object.keys(u.days||{}).length >= 30 },
+{ id:"locked5",     icon:"🔒", name:"Lock Addict",    desc:"Lock your day 5 times",             check: u => Object.values(u.days||{}).filter(d=>d.finished).length >= 5 },
+];
+const CHALLENGES = [
+{ id:"ch_tasks3",    icon:"✅", title:"Task Trio",       desc:"Complete 3 tasks today",    reward:30,  check: (u,today) => { let done=0; const d=u.days?.[today]; if(!d) return [0,3]; Object.values(d.subjects||{}).forEach(s=>{ done+=s.tasks?.filter(t=>t.done).length||0; }); return [Math.min(done,3),3]; } },
+{ id:"ch_lock",      icon:"🔒", title:"Day Locked",      desc:"Lock your day today",       reward:20,  check: (u,today) => { const d=u.days?.[today]; return [d?.finished?1:0,1]; } },
+{ id:"ch_streak",    icon:"🔥", title:"Keep the Flame",  desc:"Maintain your streak",      reward:15,  check: (u,today) => { return [(u.streak||0)>0?1:0,1]; } },
+{ id:"ch_2subs",     icon:"📚", title:"Dual Focus",      desc:"Study 2 subjects today",    reward:20,  check: (u,today) => { const d=u.days?.[today]; return [Math.min(d?.selectedSubs?.length||0,2),2]; } },
+{ id:"ch_math",      icon:"∑",  title:"Math Day",        desc:"Do at least 2 Maths tasks", reward:25,  check: (u,today) => { const d=u.days?.[today]; const done=d?.subjects?.Maths?.tasks?.filter(t=>t.done).length||0; return [Math.min(done,2),2]; } },
+];
+const WHEEL_PRIZES = [
+{ label:"+30⚡",    credits:30,   color:"#7c3aed" },
+{ label:"+10⚡",    credits:10,   color:"#3b82f6" },
+{ label:"+50⚡",    credits:50,   color:"#ff6b35" },
+{ label:"😴 Nothing", credits:0,  color:"#2a2a40" },
+{ label:"+20⚡",    credits:20,   color:"#10b981" },
+{ label:"+100⚡",   credits:100,  color:"#f59e0b" },
+{ label:"+5⚡",     credits:5,    color:"#06b6d4" },
+{ label:"😴 Nothing", credits:0,  color:"#1a1a2e" },
+];
+let spinAngle = 0;
+let spinAnimId = null;
+function renderProgress() {
+if (!userData || !currentUser) return;
+const today  = todayStr();
+const wk     = weekKey();
+const days   = userData.days || {};
+const allDays= Object.keys(days);
+const totalTasks = allDays.reduce((s,k)=>{ let c=0; Object.values(days[k].subjects||{}).forEach(sub=>{ c+=sub.tasks?.filter(t=>t.done).length||0; }); return s+c; }, 0);
+const lockedDays = allDays.filter(k=>days[k].finished).length;
+// ════ LEVEL SYSTEM ════
+const LEVEL_THRESHOLDS = [0, 100, 250, 450, 700, 1000, 1350, 1750, 2200, 2700, 3250, 3850, 4500, 5200, 5950, 6750, 7600, 8500, 9450, 10450];
+const LEVEL_UNLOCKS = {
+1: "Unlock progress tracking",
+5: "Profile customization",
+10: "Premium features preview",
+15: "Exclusive badges",
+20: "Custom themes",
+25: "Study resources",
+30: "Mentorship access",
+35: "Certificate preview",
+40: "Hall of Fame entry",
+50: "GODLIKE status 👑"
+};
+const userXP = userData.xp || 0;
+let level = 1;
+for (let i = 1; i <= 50; i++) {
+const threshold = LEVEL_THRESHOLDS[Math.min(i - 1, LEVEL_THRESHOLDS.length - 1)] + (i - 1) * 800;
+if (userXP >= threshold) level = i;
+else break;
+}
+const currentThreshold = LEVEL_THRESHOLDS[Math.min(level - 1, LEVEL_THRESHOLDS.length - 1)] + (level - 1) * 800;
+const nextThreshold = LEVEL_THRESHOLDS[Math.min(level, LEVEL_THRESHOLDS.length - 1)] + level * 800;
+const xpInLevel = userXP - currentThreshold;
+const xpNeeded = nextThreshold - currentThreshold;
+const levelProgress = Math.min(100, Math.max(0, Math.round(xpInLevel / xpNeeded * 100)));
+const levelEmojis = ["","🔥","⚡","🌟","💎","👑","🔱","⚔️","🎯","🏆","🌪️"];
+const levelEmoji = levelEmojis[Math.min(level, 10)];
+const nextUnlock = LEVEL_UNLOCKS[level + 1] || "Continue grinding 🔥";
+document.getElementById("levelCard").innerHTML = `
+<div class="level-header">
+<div class="level-badge">${levelEmoji}</div>
+<div class="level-info">
+<div class="level-number">LV ${level}</div>
+<div class="level-title">${level <= 10 ? ["Sleeper","Novice","Grinder","Hustler","Beast","Maniac","Insane","Demigod","Legend","Mythic","GODLIKE"][Math.min(level, 10)] : "GODLIKE RANK " + (level - 10)}</div>
+</div>
+</div>
+<div class="level-progress-section">
+<div class="level-progress-label">
+<span class="level-progress-label-text">Level Progress</span>
+<span class="level-progress-label-xp">${xpInLevel}/${xpNeeded} XP</span>
+</div>
+<div class="level-progress-bar">
+<div class="level-progress-fill" style="width:${levelProgress}%"></div>
+</div>
+<div class="level-unlock">🎁 Next unlock at LV ${level + 1}: <span class="level-unlock-item">${nextUnlock}</span></div>
+</div>
+`;
+// ════ MONTHLY TROPHY ════
+const isMonthEnd = new Date().getDate() >= 25; // show in last week
+if (isMonthEnd) {
+const leaderboardCheck = async () => {
+try {
+const snap = await getDocs(query(collection(db, 'users'), orderBy('credits', 'desc'), limit(1)));
+if (!snap.empty) {
+const topUser = snap.docs[0].data();
+if (topUser.uid === currentUser.uid) {
+document.getElementById("trophyBanner").style.display = "flex";
+document.getElementById("trophyBanner").innerHTML = `
+<div class="trophy-icon">🏆</div>
+<div class="trophy-content">
+<div class="trophy-title">MONTHLY CHAMPION</div>
+<div class="trophy-desc">You're #1 on the leaderboard this month! Trophy awarded at month-end.</div>
+</div>
+`;
+}
+}
+} catch(e) {}
+};
+leaderboardCheck();
+}
+// Stats grid
+document.getElementById("progressStats").innerHTML = `
+<div class="progress-stat"><div class="progress-stat-num" style="color:var(--accent)">⚡${userData.credits||0}</div><div class="progress-stat-label">Total Credits</div></div>
+<div class="progress-stat"><div class="progress-stat-num" style="color:#f59e0b">🔥${userData.streak||0}</div><div class="progress-stat-label">Streak</div></div>
+<div class="progress-stat"><div class="progress-stat-num" style="color:#4ade80">${allDays.length}</div><div class="progress-stat-label">Days Logged</div></div>
+<div class="progress-stat"><div class="progress-stat-num" style="color:var(--phys)">${totalTasks}</div><div class="progress-stat-label">Tasks Done</div></div>
+<div class="progress-stat"><div class="progress-stat-num" style="color:var(--accent2)">${lockedDays}</div><div class="progress-stat-label">Days Locked</div></div>
+<div class="progress-stat"><div class="progress-stat-num" style="color:var(--gold)">${userData.weekCredits?.[wk]||0}</div><div class="progress-stat-label">This Week</div></div>
+`;
+// Subject bars
+let mathTasks=0, physTasks=0, chemTasks=0;
+allDays.forEach(k => {
+mathTasks += days[k].subjects?.Maths?.tasks?.filter(t=>t.done).length||0;
+physTasks += days[k].subjects?.Physics?.tasks?.filter(t=>t.done).length||0;
+chemTasks += days[k].subjects?.Chemistry?.tasks?.filter(t=>t.done).length||0;
+});
+const maxT = Math.max(mathTasks, physTasks, chemTasks, 1);
+document.getElementById("subjectBars").innerHTML = [
+{name:"Maths",count:mathTasks,color:"var(--math)",icon:"∑"},
+{name:"Physics",count:physTasks,color:"var(--phys)",icon:"⚛️"},
+{name:"Chemistry",count:chemTasks,color:"var(--chem)",icon:"⚗️"},
+].map(s=>`
+<div style="margin-bottom:12px">
+<div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px">
+<span style="color:${s.color};font-weight:700">${s.icon} ${s.name}</span>
+<span style="color:var(--muted)">${s.count} tasks</span>
+</div>
+<div style="height:8px;background:var(--bg3);border-radius:4px;overflow:hidden">
+<div style="height:100%;width:${Math.round(s.count/maxT*100)}%;background:${s.color};border-radius:4px;transition:width .6s ease"></div>
+</div>
+</div>
+`).join("");
+// Challenges
+document.getElementById("challengesList").innerHTML = CHALLENGES.map(c => {
+const [cur, max] = c.check(userData, today);
+const done = cur >= max;
+const pct  = Math.round(cur/max*100);
+return `<div class="challenge-card" style="${done?"border-color:#4ade8066;background:color-mix(in srgb,#4ade80 5%,var(--bg2))":""}">
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+<span style="font-size:22px">${c.icon}</span>
+<div style="flex:1">
+<div class="challenge-title">${c.title}</div>
+<div class="challenge-desc">${c.desc}</div>
+</div>
+</div>
+<div class="challenge-progress-bar"><div class="challenge-progress-fill" style="width:${pct}%"></div></div>
+<div class="challenge-footer">
+<span style="color:var(--muted)">${cur}/${max}</span>
+<span class="challenge-reward">+${c.reward}⚡ reward</span>
+<span class="challenge-status" style="color:${done?"#4ade80":"var(--muted)"}">${done?"✓ DONE":"IN PROGRESS"}</span>
+</div>
+</div>`;
+}).join("");
+// Badges
+document.getElementById("badgesGrid").innerHTML = BADGES.map(b => {
+const unlocked = b.check(userData);
+return `<div class="badge-item ${unlocked?"unlocked":"locked"}" title="${b.desc}">
+<div class="badge-icon">${b.icon}</div>
+<div class="badge-name">${b.name}</div>
+</div>`;
+}).join("");
+// Heatmap
+const hm = document.getElementById("heatmap");
+const today30 = [];
+for (let i=29; i>=0; i--) {
+const d = new Date(); d.setDate(d.getDate()-i);
+today30.push(d.toISOString().split("T")[0]);
+}
+hm.innerHTML = today30.map(d => {
+const entry = days[d];
+const col = !entry ? "var(--bg3)" : entry.finished ? "#4ade80" : "#fbbf24";
+const tip = !entry ? d+": No activity" : entry.finished ? d+": Day locked 🔒" : d+": Active";
+return `<div title="${tip}" style="width:calc((100% - 116px)/30);min-width:8px;height:24px;background:${col};border-radius:3px;flex-shrink:0"></div>`;
+}).join("");
+// Draw wheel
+drawWheel();
+// Spin button state
+const lastSpin = userData.lastSpinDate;
+const canSpin  = lastSpin !== today && !!days[today]?.finished;
+const btn = document.getElementById("spinBtn");
+const note = document.getElementById("spinNote");
+btn.disabled = !canSpin;
+if (lastSpin === today) note.textContent = "✓ Already spun today — come back tomorrow!";
+else if (!days[today]?.finished) note.textContent = "🔒 Lock your day first to unlock the spin";
+else note.textContent = "🎰 You have a free spin today!";
+}
+function drawWheel(extraAngle=0) {
+const canvas = document.getElementById("spinCanvas");
+if (!canvas) return;
+const ctx = canvas.getContext("2d");
+const cx=120, cy=120, r=112;
+const slice = (2*Math.PI)/WHEEL_PRIZES.length;
+ctx.clearRect(0,0,240,240);
+WHEEL_PRIZES.forEach((p,i) => {
+const start = spinAngle + extraAngle + i*slice;
+ctx.beginPath(); ctx.moveTo(cx,cy);
+ctx.arc(cx,cy,r,start,start+slice);
+ctx.fillStyle = p.color; ctx.fill();
+ctx.strokeStyle="#0a0a12"; ctx.lineWidth=2; ctx.stroke();
+ctx.save(); ctx.translate(cx,cy);
+ctx.rotate(start + slice/2);
+ctx.textAlign="right"; ctx.fillStyle="#fff";
+ctx.font="bold 12px 'DM Sans',sans-serif";
+ctx.fillText(p.label, r-8, 4);
+ctx.restore();
+});
+// Center circle
+ctx.beginPath(); ctx.arc(cx,cy,22,0,2*Math.PI);
+ctx.fillStyle="#0a0a12"; ctx.fill();
+ctx.strokeStyle="var(--border)"; ctx.lineWidth=2; ctx.stroke();
+ctx.fillStyle="#fff"; ctx.font="bold 14px 'DM Sans',sans-serif";
+ctx.textAlign="center"; ctx.fillText("JEE",cx,cy+5);
+// Pointer
+ctx.beginPath(); ctx.moveTo(cx+r+8,cy); ctx.lineTo(cx+r-12,cy-8); ctx.lineTo(cx+r-12,cy+8);
+ctx.fillStyle="#ff6b35"; ctx.fill();
+}
+window.spinWheel = async () => {
+const today = todayStr();
+if (!userData.days?.[today]?.finished) { toast("Lock your day first!","err"); return; }
+if (userData.lastSpinDate === today) { toast("Already spun today!","err"); return; }
+const btn = document.getElementById("spinBtn");
+btn.disabled = true;
+const spins   = 5 + Math.random()*5;
+const prize   = Math.floor(Math.random()*WHEEL_PRIZES.length);
+const slice   = (2*Math.PI)/WHEEL_PRIZES.length;
+// target angle so that prize ends up at pointer (right side = angle 0)
+const target  = spins*2*Math.PI + (2*Math.PI - (prize*slice + slice/2) - spinAngle);
+const start   = performance.now();
+const dur     = 3500;
+function easeOut(t) { return 1-(1-t)*(1-t)*(1-t); }
+function frame(now) {
+const p = Math.min((now-start)/dur, 1);
+const angle = easeOut(p)*target;
+drawWheel(angle);
+if (p < 1) { spinAnimId = requestAnimationFrame(frame); }
+else {
+spinAngle = (spinAngle+target) % (2*Math.PI);
+drawWheel(0);
+const won = WHEEL_PRIZES[prize];
+setTimeout(async () => {
+if (won.credits > 0) {
+toast(`🎰 You won ${won.label}!`);
+userData.credits = (userData.credits||0)+won.credits;
+userData.lastSpinDate = today;
+await saveUser();
+} else {
+toast("😴 Unlucky — no credits this time!");
+userData.lastSpinDate = today;
+await saveUser();
+}
+renderProgress();
+renderHome();
+}, 300);
+}
+}
+requestAnimationFrame(frame);
+};
+// ── DAILY QUOTE ───────────────────────────────────────────────────────────────
+const JEE_QUOTES = [
+{ text: "Success is the sum of small efforts repeated day in and day out.", author: "— Robert Collier" },
+{ text: "The secret of getting ahead is getting started.", author: "— Mark Twain" },
+{ text: "Don't watch the clock; do what it does. Keep going.", author: "— Sam Levenson" },
+{ text: "The pain you feel today will be the strength you feel tomorrow.", author: "— Arnold Schwarzenegger" },
+{ text: "It always seems impossible until it's done.", author: "— Nelson Mandela" },
+{ text: "Hard work beats talent when talent doesn't work hard.", author: "— Tim Notke" },
+{ text: "Your future self is watching you right now through your memories.", author: "— Aubrey de Grey" },
+{ text: "The difference between ordinary and extraordinary is that little extra.", author: "— Jimmy Johnson" },
+{ text: "Study not to know more, but to know better.", author: "— Seneca" },
+{ text: "IIT doesn't select the smartest. It selects the most disciplined.", author: "— JEEGrind" },
+{ text: "Every topper was once a beginner who refused to quit.", author: "— JEEGrind" },
+{ text: "The rank you want is locked behind the hours you haven't put in yet.", author: "— JEEGrind" },
+{ text: "Focus on the process. The rank will follow.", author: "— JEEGrind" },
+{ text: "One more problem solved. One rank higher.", author: "— JEEGrind" },
+{ text: "Your competitors are studying right now. What are you doing?", author: "— JEEGrind" },
+{ text: "Physics, Chemistry, Maths — master all three or master none.", author: "— JEEGrind" },
+{ text: "A year of pain for a lifetime of pride.", author: "— JEEGrind" },
+{ text: "Consistency beats intensity. Show up every single day.", author: "— JEEGrind" },
+{ text: "The exam doesn't care how tired you are.", author: "— JEEGrind" },
+{ text: "Sleep less, solve more — but sleep enough to remember what you solved.", author: "— JEEGrind" },
+{ text: "Don't pray for an easy paper. Prepare for a hard one.", author: "— JEEGrind" },
+{ text: "Doubt kills more dreams than failure ever will.", author: "— Suzy Kassem" },
+{ text: "Champions train. Losers complain.", author: "— JEEGrind" },
+{ text: "The grind now, the glory later.", author: "— JEEGrind" },
+{ text: "You don't need motivation. You need discipline.", author: "— JEEGrind" },
+{ text: "Small daily improvements lead to staggering long-term results.", author: "— Robin Sharma" },
+{ text: "Either you run the day or the day runs you.", author: "— Jim Rohn" },
+{ text: "Be so good they can't ignore you.", author: "— Steve Martin" },
+];
+function renderDailyQuote() {
+// Same quote all day, changes each day based on date
+const dayIndex = Math.floor(Date.now() / 86400000) % JEE_QUOTES.length;
+const q = JEE_QUOTES[dayIndex];
+const el = document.getElementById("dailyQuoteText");
+const au = document.getElementById("dailyQuoteAuthor");
+if (el) el.textContent = q.text;
+if (au) au.textContent = q.author;
+}
+// ── SHOUTOUT ──────────────────────────────────────────────────────────────────
+async function loadShoutout() {
+try {
+const snap = await getDoc(doc(db,"config","shoutout"));
+const banner = document.getElementById("shoutoutBanner");
+if (!banner) return;
+if (snap.exists() && snap.data().name) {
+const d = snap.data();
+document.getElementById("shoutoutName").textContent = d.name;
+document.getElementById("shoutoutMsg").textContent  = d.msg || "Absolute grinder this week! 🔥";
+banner.style.display = "flex";
+} else {
+banner.style.display = "none";
+}
+} catch(e) {}
+}
+window.setShoutout = async () => {
+  const name = document.getElementById("shoutoutNameInput")?.value?.trim();
+  const msg  = document.getElementById("shoutoutMsgInput")?.value?.trim();
+  if (!name) { toast("Enter a member name","err"); return; }
+  
+  // Sanitize input to prevent XSS
+  const sanitizeName = name.substring(0, 50).replace(/<[^>]*>/g, ''); // Remove HTML tags, max 50 chars
+  const sanitizeMsg = (msg || "Absolute grinder this week! 🔥").substring(0, 200).replace(/<[^>]*>/g, ''); // Remove HTML tags, max 200 chars
+  
+  try {
+    await setDoc(doc(db,"config","shoutout"), { name: sanitizeName, msg: sanitizeMsg, setAt: new Date().toISOString() });
+    toast("Shoutout pinned! 👑");
+    const statusEl = document.getElementById("shoutoutStatus");
+    if (statusEl) statusEl.textContent = `✓ Currently pinned: ${sanitizeName}`;
+  } catch(e) {
+    console.error('setShoutout error:', e);
+    toast('Failed to pin shoutout', 'err');
+  }
+};
+window.clearShoutout = async () => {
+  try {
+    await setDoc(doc(db,"config","shoutout"), { name:"", msg:"" });
+    toast("Shoutout cleared");
+    const statusEl = document.getElementById("shoutoutStatus");
+    if (statusEl) statusEl.textContent = "No active shoutout.";
+  } catch(e) {
+    console.error('clearShoutout error:', e);
+  }
+};
+async function loadShoutoutAdminStatus() {
+try {
+const snap = await getDoc(doc(db,"config","shoutout"));
+const el = document.getElementById("shoutoutStatus");
+if (!el) return;
+el.textContent = snap.exists() && snap.data().name
+? `✓ Currently pinned: ${snap.data().name}`
+: "No active shoutout.";
+if (snap.exists() && snap.data().name) {
+const ni = document.getElementById("shoutoutNameInput");
+const mi = document.getElementById("shoutoutMsgInput");
+if (ni) ni.value = snap.data().name;
+if (mi) mi.value = snap.data().msg||"";
+}
+} catch(e) {}
+}
+// ── RIVAL SYSTEM ──────────────────────────────────────────────────────────────
+async function loadRival(allUsers) {
+  const wk    = weekKey();
+  const myWkC = userData.weekCredits?.[wk] || 0;
+  const myUid = currentUser.uid;
+  
+  // Find rival = closest weekly credits, not me
+  const others = allUsers.filter(u => u.uid !== myUid);
+  const rivalCard = document.getElementById("rivalCard");
+  if (others.length === 0) { 
+    if (rivalCard) rivalCard.style.display = "none";
+    return;
+  }
+  
+  // Sort by distance from my weekly credits
+  const sorted = others.slice().sort((a,b) => {
+    const da = Math.abs((a.weekCredits?.[wk]||0) - myWkC);
+    const db = Math.abs((b.weekCredits?.[wk]||0) - myWkC);
+    return da - db;
+  });
+  
+  // Use a deterministic rival seeded by week so it doesn't change mid-week
+  // Improved hash function for better distribution
+  const pool = sorted.slice(0, Math.min(3, sorted.length));
+  const seed = wk.split("").reduce((s,c) => (s * 31 + c.charCodeAt(0)) & 0xFFFFFFFF, 0);
+  const rival = pool[Math.abs(seed) % pool.length];
+  
+  const theirWkC = rival.weekCredits?.[wk] || 0;
+  const total    = Math.max(myWkC + theirWkC, 1); // Ensure no division by zero
+  const myPct    = Math.round(myWkC / total * 100);
+  const theirPct = 100 - myPct;
+  
+  if (rivalCard) rivalCard.style.display = "block";
+  
+  const rivalName = document.getElementById("rivalMyName");
+  const rivalCreds = document.getElementById("rivalMyCredits");
+  const theirName = document.getElementById("rivalTheirName");
+  const theirCreds = document.getElementById("rivalTheirCredits");
+  const barMe = document.getElementById("rivalBarMe");
+  const barThem = document.getElementById("rivalBarThem");
+  const leading = document.getElementById("rivalLeading");
+  const resetIn = document.getElementById("rivalResetIn");
+  
+  if (rivalName) rivalName.textContent = userData.name || "You";
+  if (rivalCreds) rivalCreds.textContent = `⚡${myWkC}`;
+  if (theirName) theirName.textContent = rival.name || "Rival";
+  if (theirCreds) theirCreds.textContent = `⚡${theirWkC}`;
+  if (barMe) barMe.style.width = myPct + "%";
+  if (barThem) barThem.style.width = theirPct + "%";
+  
+  const leadingText = myWkC > theirWkC ? "🟣 You're leading!" : myWkC < theirWkC ? "🔴 You're behind!" : "🟡 Dead heat!";
+  if (leading) leading.textContent = leadingText;
+  
+  // Days to Monday
+  const daysToMon = (8 - new Date().getDay()) % 7 || 7;
+  if (resetIn) resetIn.textContent = `Resets in ${daysToMon}d`;
+}
+// ── PREMIUM DISPLAY ───────────────────────────────────────────────────────────
+function applyPremiumUI() {
+if (!userData.premium) return;
+// Gold glow on avatar in header
+document.querySelectorAll(".avatar").forEach(a => a.classList.add("premium-avatar"));
+// Add premium badge next to name in title banner
+const titleName = document.getElementById("titleName");
+if (titleName && !document.getElementById("premiumBadgeHome")) {
+const badge = document.createElement("span");
+badge.id = "premiumBadgeHome";
+badge.className = "premium-badge";
+badge.style.marginLeft = "8px";
+badge.style.fontSize = "10px";
+badge.innerHTML = "👑 PRO";
+titleName.parentNode.insertBefore(badge, titleName.nextSibling);
+}
+}
+// ── EXTEND switchAdminTab for shoutout ───────────────────────────────────────
+const _origSwitchAdminTab = window.switchAdminTab;
+window.switchAdminTab = (tab) => {
+const tabs = ["members","bugs","broadcast","shoutout","nuke"];
+document.querySelectorAll(".admin-tab").forEach((t,i) => t.classList.toggle("active", tabs[i]===tab));
+document.querySelectorAll(".admin-tab-panel").forEach(p => p.classList.remove("active"));
+document.getElementById(`adminTab_${tab}`)?.classList.add("active");
+if (tab==="bugs") loadBugReports();
+if (tab==="broadcast") loadBroadcastStatus();
+if (tab==="shoutout") loadShoutoutAdminStatus();
+if (tab==="nuke") {
+const totalCreds = adminUsers.reduce((s,u)=>s+(u.credits||0),0);
+const el = document.getElementById("adminNukeStats");
+if (el) el.textContent = `Total credits in system: ⚡ ${totalCreds} across ${adminUsers.length} members`;
+}
+};
+// ── PATCH enterApp to load new features ──────────────────────────────────────
+// ── CREDIT SHOP ───────────────────────────────────────────────────────────────
+const SHOP_ITEMS = [
+// BOOSTS
+{ id:'2x_credits_24h',  cat:'boost',   icon:'🔥', name:'2x Credit Multiplier', desc:'All tasks give 20⚡ instead of 10 for 24 hours', price:50,  color:'#ff6b35', duration:86400000, type:'timed_multiplier' },
+{ id:'2x_xp_24h',       cat:'boost',   icon:'🚀', name:'2x XP Boost',          desc:'Earn double XP for your next 10 tasks',           price:40,  color:'#7c3aed', uses:10,          type:'xp_boost', badge:'🔥 POPULAR' },
+{ id:'credit_burst',    cat:'boost',   icon:'⚡', name:'Energy Drink',         desc:'Instant +75⚡ bonus to your credits',             price:60,  color:'#f59e0b', type:'instant_credits', amount:75, badge:'NEW' },
+// SHIELDS
+{ id:'streak_shield',   cat:'shield',  icon:'🛡️', name:'Streak Shield',        desc:'One free missed day — your streak stays intact',  price:30,  color:'#06b6d4', type:'shield', max:1 },
+{ id:'streak_shield_3', cat:'shield',  icon:'💎', name:'Super Shield x3',      desc:'3 streak shields stored — use when you need',     price:80,  color:'#a78bfa', type:'shield_3' },
+{ id:'task_skip',       cat:'shield',  icon:'🎯', name:'Daily Skip',           desc:'Skip today\'s challenge without losing reward',   price:15,  color:'#10b981', type:'challenge_skip', max:3 },
+// AVATARS / PROFILE
+{ id:'avatar_fire',     cat:'avatar',  icon:'🔥', name:'Fire Avatar',          desc:'Unlock 🔥 as your profile avatar',               price:20,  color:'#ef4444', type:'avatar', avatar:'🔥' },
+{ id:'avatar_lightning',cat:'avatar',  icon:'⚡', name:'Lightning Avatar',     desc:'Unlock ⚡ as your profile avatar',               price:20,  color:'#fbbf24', type:'avatar', avatar:'⚡' },
+{ id:'avatar_crown',    cat:'avatar',  icon:'👑', name:'Crown Avatar',         desc:'Unlock 👑 — show you\'re royalty',               price:60,  color:'#f59e0b', type:'avatar', avatar:'👑' },
+{ id:'avatar_alien',    cat:'avatar',  icon:'👽', name:'Alien Avatar',         desc:'Unlock 👽 — for the galaxy-brained grinder',     price:35,  color:'#34d399', type:'avatar', avatar:'👽' },
+{ id:'avatar_robot',    cat:'avatar',  icon:'🤖', name:'Robot Avatar',         desc:'Unlock 🤖 — machine-mode activated',             price:35,  color:'#60a5fa', type:'avatar', avatar:'🤖' },
+// SPECIAL
+{ id:'instant_trophy',  cat:'special', icon:'🏆', name:'Instant Trophy',       desc:'Get a special trophy badge on your profile',      price:100, color:'#fbbf24', type:'badge_unlock', badge_id:'trophy', badge:'NEW' },
+{ id:'double_tomorrow', cat:'special', icon:'🌅', name:'2x Tomorrow',          desc:'All credits earned tomorrow are doubled',         price:45,  color:'#ec4899', type:'double_day' },
+{ id:'xp_surge',        cat:'special', icon:'🧬', name:'XP Surge',             desc:'Instantly gain +500 XP toward your level',        price:70,  color:'#7c3aed', type:'instant_xp', amount:500 },
+];
+let shopFilter = 'all';
+window.filterShop = (cat) => {
+shopFilter = cat;
+['All','Boost','Shield','Avatar','Special'].forEach(c => {
+const btn = document.getElementById(`sc${c}`);
+if (btn) btn.classList.toggle('active', c.toLowerCase()===cat||(cat==='all'&&c==='All'));
+});
+renderShopGrid();
+};
+function renderShop() {
+const cd = document.getElementById('shopCreditsDisplay');
+if (cd) cd.textContent = userData?.credits||0;
+renderShopGrid();
+renderOwnedItems();
+renderActivePowerups();
+}
+function renderShopGrid() {
+const grid = document.getElementById('shopGrid');
+if (!grid) return;
+const owned    = userData?.shopOwned||{};
+const filtered = shopFilter==='all' ? SHOP_ITEMS : SHOP_ITEMS.filter(i=>i.cat===shopFilter);
+grid.innerHTML = filtered.map(item => {
+const isOwned     = owned[item.id];
+const canAfford   = (userData?.credits||0) >= item.price;
+const isMaxed     = item.max && (owned[item.id]||0) >= item.max;
+const isActive    = isTimedActive(item);
+let btnText = `⚡ ${item.price}`;
+let btnClass = 'btn-buy';
+let btnDisabled = !canAfford || isMaxed;
+if (isActive)       { btnText='✓ ACTIVE';  btnClass='btn-buy active-btn'; btnDisabled=true; }
+else if (isMaxed)   { btnText='✓ Maxed';   btnClass='btn-buy owned-btn';  btnDisabled=true; }
+else if (isOwned && item.type==='avatar')  { btnText='✓ Owned'; btnClass='btn-buy owned-btn'; btnDisabled=true; }
+const badgeHtml = item.badge
+? `<span class="shop-badge ${item.badge==='NEW'?'shop-badge-new':'shop-badge-popular'}">${item.badge}</span>`
+: '';
+return `<div class="shop-item-card ${isOwned?'owned':''}" style="--item-color:${item.color}">
+<div class="shop-item-header">
+<div class="shop-item-icon">${item.icon}</div>
+<div style="flex:1">
+<div class="shop-item-name">${item.name}${badgeHtml}</div>
+<div class="shop-item-desc">${item.desc}</div>
+</div>
+</div>
+<div class="shop-item-footer">
+<span class="shop-item-price ${item.price===0?'free':''}">⚡ ${item.price} credits</span>
+<button class="${btnClass}" ${btnDisabled?'disabled':''} onclick="buyItem('${item.id}')"
+style="${btnDisabled?'':'background:'+item.color}">${btnText}</button>
+</div>
+</div>`;
+}).join('');
+}
+function renderOwnedItems() {
+const el = document.getElementById('ownedItems');
+if (!el) return;
+const owned = userData?.shopOwned||{};
+const keys  = Object.keys(owned).filter(k=>owned[k]);
+if (!keys.length) { el.innerHTML='<div style="color:var(--muted);font-size:13px">No items yet. Start shopping!</div>'; return; }
+el.innerHTML = keys.map(id => {
+const item = SHOP_ITEMS.find(i=>i.id===id);
+if (!item) return '';
+const qty = typeof owned[id]==='number' && owned[id]>1 ? ` x${owned[id]}` : '';
+return `<span class="owned-item-pill">${item.icon} ${item.name}${qty}</span>`;
+}).join('');
+}
+function renderActivePowerups() {
+const banner = document.getElementById('activePowerups');
+const list   = document.getElementById('activePowerupsList');
+if (!banner||!list) return;
+const lines = [];
+const now = Date.now();
+// 2x credits
+if (userData?.shopActive?.['2x_credits_24h'] > now) {
+const rem = Math.ceil((userData.shopActive['2x_credits_24h']-now)/3600000);
+lines.push(`🔥 2x Credits — ${rem}h remaining`);
+}
+// double tomorrow
+if (userData?.shopActive?.['double_tomorrow']) {
+lines.push('🌅 2x Tomorrow — active for next day');
+}
+// streak shield
+if (userData?.streakShield) lines.push('🛡️ Streak Shield — 1 miss protected');
+if ((userData?.shopOwned?.streak_shield_3||0)>0) lines.push(`💎 Super Shield x${userData.shopOwned.streak_shield_3} stored`);
+// xp boost
+if ((userData?.shopActive?.xp_boost_uses||0)>0) lines.push(`🚀 2x XP — ${userData.shopActive.xp_boost_uses} uses left`);
+if (!lines.length) { banner.style.display='none'; return; }
+banner.style.display='block';
+list.innerHTML = lines.map(l=>`<div style="font-size:13px;color:#4ade80;margin-bottom:4px">✓ ${l}</div>`).join('');
+}
+function isTimedActive(item) {
+if (!userData?.shopActive) return false;
+if (item.id==='2x_credits_24h') return (userData.shopActive['2x_credits_24h']||0) > Date.now();
+if (item.id==='2x_xp_24h') return (userData.shopActive.xp_boost_uses||0) > 0;
+if (item.id==='streak_shield') return userData.streakShield===true;
+if (item.id==='double_tomorrow') return !!userData.shopActive.double_tomorrow;
+return false;
+}
+window.buyItem = async (itemId) => {
+const item = SHOP_ITEMS.find(i=>i.id===itemId);
+if (!item) return;
+if ((userData.credits||0) < item.price) { toast('Not enough credits! ⚡', 'err'); return; }
+if (!confirm(`Buy "${item.name}" for ⚡${item.price} credits?`)) return;
+userData.credits -= item.price;
+const wk = weekKey();
+userData.weekCredits = userData.weekCredits||{};
+// weekCredits shouldn't go negative on spend — only deduct from total
+userData.shopOwned  = userData.shopOwned||{};
+userData.shopActive = userData.shopActive||{};
+switch(item.type) {
+case 'timed_multiplier':
+userData.shopActive['2x_credits_24h'] = Date.now() + item.duration;
+toast(`🔥 2x Credits activated for 24h!`);
+break;
+case 'xp_boost':
+userData.shopActive.xp_boost_uses = (userData.shopActive.xp_boost_uses||0) + item.uses;
+userData.shopOwned[itemId] = true;
+toast(`🚀 2x XP active for next ${item.uses} tasks!`);
+break;
+case 'instant_credits':
+userData.credits += item.amount;
+userData.weekCredits[wk] = (userData.weekCredits[wk]||0) + item.amount;
+userData.shopOwned[itemId] = (userData.shopOwned[itemId]||0) + 1;
+toast(`⚡ +${item.amount} credits! Energy drink consumed!`);
+break;
+case 'shield':
+userData.streakShield = true;
+userData.shopOwned[itemId] = true;
+toast(`🛡️ Streak Shield activated!`);
+break;
+case 'shield_3':
+userData.shopOwned['streak_shield_3'] = (userData.shopOwned['streak_shield_3']||0) + 3;
+toast(`💎 3 Streak Shields added to inventory!`);
+break;
+case 'challenge_skip':
+userData.shopOwned['task_skip'] = (userData.shopOwned['task_skip']||0) + 1;
+toast(`🎯 Challenge Skip stored!`);
+break;
+case 'avatar':
+userData.shopOwned[itemId] = true;
+userData.avatar = item.avatar;
+userData.shopOwned[itemId] = true;
+toast(`${item.avatar} Avatar unlocked and equipped!`);
+break;
+case 'badge_unlock':
+userData.shopOwned[itemId] = true;
+userData.badges = userData.badges||{};
+userData.badges['trophy'] = Date.now();
+toast(`🏆 Trophy badge unlocked!`);
+break;
+case 'double_day':
+userData.shopActive.double_tomorrow = todayStr();
+userData.shopOwned[itemId] = (userData.shopOwned[itemId]||0) + 1;
+toast(`🌅 All credits tomorrow are doubled!`);
+break;
+case 'instant_xp':
+userData.xp = (userData.xp||0) + item.amount;
+userData.shopOwned[itemId] = (userData.shopOwned[itemId]||0) + 1;
+toast(`🧬 +${item.amount} XP surge!`);
+break;
+}
+await saveUser();
+const creditsPill = document.getElementById('creditsPill');
+const shopDisplay = document.getElementById('shopCreditsDisplay');
+if (creditsPill) creditsPill.textContent = `⚡ ${userData.credits}`;
+if (shopDisplay) shopDisplay.textContent = userData.credits;
+renderShopGrid();
+renderOwnedItems();
+renderActivePowerups();
+};
+// ── PAGE NAV ──────────────────────────────────────────────────────────────────
+window.switchPage = (page) => {
+document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
+const pageEl = document.getElementById(`${page}Page`);
+if (!pageEl) return;
+pageEl.classList.add("active");
+const navEl = document.getElementById(`nav${page.charAt(0).toUpperCase()+page.slice(1)}`);
+if (navEl) navEl.classList.add("active");
+if (page === "admin")    renderAdmin();
+if (page === "progress") renderProgress();
+if (page === "doubts")   loadDoubts();
+if (page === "shop")     renderShop();
+return;
+};
+// ── PWA INSTALL ───────────────────────────────────────────────────────────────
+let deferredPrompt = null;
+window.addEventListener("beforeinstallprompt", e => {
+e.preventDefault();
+deferredPrompt = e;
+if (!sessionStorage.getItem("installDismissed")) {
+document.getElementById("installBanner").classList.add("show");
+}
+});
+window.installApp = async () => {
+if (!deferredPrompt) return;
+deferredPrompt.prompt();
+await deferredPrompt.userChoice;
+deferredPrompt = null;
+document.getElementById("installBanner").classList.remove("show");
+};
+window.dismissInstall = () => {
+sessionStorage.setItem("installDismissed","1");
+document.getElementById("installBanner").classList.remove("show");
+};
+// Register Service Worker for PWA Install
+if ("serviceWorker" in navigator) {
+navigator.serviceWorker.register("sw.js").catch(console.error);
+}
+
+// ── DOUBTS ──
+const CLOUDINARY_CLOUD = "djwgi4lkz";
+const CLOUDINARY_PRESET = "qvtnhves";
+let currentDoubtId = null;
+let doubtImageUrl = null;
+
+window.openAskDoubt = () => {
+  doubtImageUrl = null;
+  document.getElementById('doubtText').value = '';
+  document.getElementById('doubtImgPreview').style.display = 'none';
+  document.getElementById('doubtImgLabel').textContent = 'Tap to attach photo';
+  document.getElementById('doubtUploadStatus').style.display = 'none';
+  document.getElementById('askDoubtModal').style.display = 'flex';
+};
+
+window.closeAskDoubt = () => {
+  document.getElementById('askDoubtModal').style.display = 'none';
+};
+
+window.previewDoubtImage = (input) => {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 5 * 1024 * 1024) { toast('Image must be under 5MB', 'err'); return; }
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    document.getElementById('doubtPreviewImg').src = e.target.result;
+    document.getElementById('doubtImgPreview').style.display = 'block';
+    document.getElementById('doubtImgLabel').textContent = file.name;
+  };
+  reader.readAsDataURL(file);
+};
+
+async function uploadToCloudinary(file) {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('upload_preset', CLOUDINARY_PRESET);
+  const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`, {
+    method: 'POST', body: formData
+  });
+  const data = await res.json();
+  if (data.secure_url) return data.secure_url;
+  throw new Error('Upload failed');
+}
+
+window.submitDoubt = async () => {
+  const text = document.getElementById('doubtText').value.trim();
+  const subject = document.getElementById('doubtSubject').value;
+  const file = document.getElementById('doubtImgInput').files[0];
+  if (!text) { toast('Please write your doubt!', 'err'); return; }
+  const btn = document.getElementById('submitDoubtBtn');
+  btn.disabled = true; btn.textContent = 'Posting...';
+  try {
+    let imageUrl = null;
+    if (file) {
+      document.getElementById('doubtUploadStatus').style.display = 'block';
+      imageUrl = await uploadToCloudinary(file);
+      document.getElementById('doubtUploadStatus').style.display = 'none';
+    }
+    await setDoc(doc(db, 'doubts', Date.now().toString()), {
+      uid: currentUser.uid,
+      name: userData.name,
+      avatar: userData.avatar || '😊',
+      subject, text, imageUrl,
+      time: serverTimestamp(),
+      answers: 0
+    });
+    closeAskDoubt();
+    toast('Doubt posted! 🚀');
+    loadDoubts();
+  } catch(e) {
+    toast('Failed to post: ' + e.message, 'err');
+  }
+  btn.disabled = false; btn.textContent = 'Post Doubt 🚀';
+};
+
+async function loadDoubts() {
+  const list = document.getElementById('doubtsList');
+  if (!list) return;
+  list.innerHTML = '<div style="text-align:center;color:var(--muted);padding:20px;">Loading...</div>';
+  try {
+    const q = query(collection(db, 'doubts'), orderBy('time', 'desc'), limit(50));
+    const snap = await getDocs(q);
+    if (snap.empty) {
+      list.innerHTML = '<div style="text-align:center;color:var(--muted);padding:40px;">No doubts yet!<br>Be the first to ask 🤔</div>';
+      return;
+    }
+    const subColors = { Maths:'var(--math)', Physics:'var(--phys)', Chemistry:'var(--chem)', General:'var(--accent)' };
+    list.innerHTML = '';
+    snap.forEach(d => {
+      const doubt = { id: d.id, ...d.data() };
+      const timeStr = doubt.time?.toDate ? doubt.time.toDate().toLocaleDateString('en-IN', {day:'numeric',month:'short'}) : 'Just now';
+      const card = document.createElement('div');
+      card.style.cssText = 'background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:16px;';
+      card.innerHTML = `
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+          <span style="font-size:24px;">${doubt.avatar||'😊'}</span>
+          <div style="flex:1;">
+            <div style="font-weight:700;font-size:13px;">${doubt.name}</div>
+            <div style="font-size:11px;color:var(--muted);">${timeStr}</div>
+          </div>
+          <span style="font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;background:${subColors[doubt.subject]||'var(--accent)'}22;color:${subColors[doubt.subject]||'var(--accent)'};">${doubt.subject}</span>
+        </div>
+        <div style="font-size:14px;line-height:1.5;margin-bottom:${doubt.imageUrl?'10px':'0'}">${doubt.text}</div>
+        ${doubt.imageUrl ? `<img src="${doubt.imageUrl}" style="width:100%;border-radius:10px;max-height:250px;object-fit:contain;margin-bottom:10px;" onclick="window.open('${doubt.imageUrl}','_blank')"/>` : ''}
+        <button onclick="openAnswers('${doubt.id}')" style="background:var(--bg3);border:1px solid var(--border);border-radius:10px;color:var(--text);padding:8px 14px;font-size:12px;font-weight:600;cursor:pointer;margin-top:8px;">
+          💬 Answers (${doubt.answers||0})
+        </button>
+      `;
+      list.appendChild(card);
+    });
+  } catch(e) {
+    list.innerHTML = '<div style="text-align:center;color:var(--muted);padding:20px;">Failed to load doubts</div>';
+  }
+}
+
+window.openAnswers = async (doubtId) => {
+  currentDoubtId = doubtId;
+  document.getElementById('answerInput').value = '';
+  document.getElementById('answersModal').style.display = 'flex';
+  await loadAnswers(doubtId);
+};
+
+window.closeAnswers = () => {
+  document.getElementById('answersModal').style.display = 'none';
+  currentDoubtId = null;
+};
+
+async function loadAnswers(doubtId) {
+  const list = document.getElementById('answersList');
+  list.innerHTML = '<div style="text-align:center;color:var(--muted);font-size:13px;">Loading...</div>';
+  try {
+    const q = query(collection(db, 'doubts', doubtId, 'answers'), orderBy('time','asc'));
+    const snap = await getDocs(q);
+    if (snap.empty) {
+      list.innerHTML = '<div style="text-align:center;color:var(--muted);font-size:13px;padding:20px;">No answers yet. Be the first! 💡</div>';
+      return;
+    }
+    list.innerHTML = '';
+    snap.forEach(d => {
+      const a = d.data();
+      const div = document.createElement('div');
+      div.style.cssText = 'background:var(--bg3);border-radius:12px;padding:12px;';
+      div.innerHTML = `
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+          <span style="font-size:18px;">${a.avatar||'😊'}</span>
+          <div style="font-weight:700;font-size:12px;">${a.name}</div>
+        </div>
+        <div style="font-size:13px;line-height:1.5;margin-bottom:8px;">${a.text}</div>
+        ${a.image ? `<img src="${a.image}" style="width:100%;max-height:300px;border-radius:10px;object-fit:cover;cursor:pointer;" onclick="window.open('${a.image}','_blank')"/>` : ''}
+      `;
+      list.appendChild(div);
+    });
+  } catch(e) {
+    list.innerHTML = '<div style="color:var(--muted);font-size:13px;">Failed to load</div>';
+  }
+}
+
+window.submitAnswer = async () => {
+  const text = document.getElementById('answerInput').value.trim();
+  const fileInput = document.getElementById('answerImageInput');
+  const file = fileInput?.files?.[0];
+  const submitBtn = document.querySelector('[onclick="submitAnswer()"]');
+  
+  if (!text && !file) {
+    toast('Type an answer or attach an image', 'err');
+    return;
+  }
+  if (!currentDoubtId) {
+    toast('Error: No doubt selected', 'err');
+    return;
+  }
+  
+  // Prevent race condition - disable button
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.style.opacity = '0.5';
+  }
+  
+  try {
+    let imageUrl = null;
+    
+    // If user selected an image, upload to Cloudinary
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        toast('Image too large (max 5MB)', 'err');
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.style.opacity = '1';
+        }
+        return;
+      }
+      
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('upload_preset', 'qvtnhves');
+      
+      try {
+        const cloudRes = await fetch('https://api.cloudinary.com/v1_1/djwgi4lkz/image/upload', {
+          method: 'POST',
+          body: formData
+        });
+        
+        if (cloudRes.ok) {
+          const data = await cloudRes.json();
+          imageUrl = data.secure_url;
+          toast('Image uploaded ✓', 'ok');
+        } else {
+          console.error('Cloudinary error:', cloudRes.status);
+          toast('Image upload failed, posting text only', 'err');
+        }
+      } catch (uploadErr) {
+        console.error('Upload error:', uploadErr);
+        toast('Network error uploading image', 'err');
+      }
+    }
+    
+    // Save to Firebase
+    await setDoc(doc(db, 'doubts', currentDoubtId, 'answers', Date.now().toString()), {
+      uid: currentUser.uid,
+      name: userData.name || 'Anonymous',
+      avatar: userData.avatar || '😊',
+      text: text || '(Shared image)',
+      image: imageUrl || null,
+      time: serverTimestamp()
+    });
+    
+    // Update answer count
+    await updateDoc(doc(db, 'doubts', currentDoubtId), { 
+      answers: increment(1),
+      lastAnswerTime: serverTimestamp()
+    });
+    
+    // Clear inputs
+    document.getElementById('answerInput').value = '';
+    fileInput.value = '';
+    
+    // Reload and show success
+    await loadAnswers(currentDoubtId);
+    toast('Answer posted! 💡', 'ok');
+    loadDoubts();
+    
+  } catch (mainErr) {
+    console.error('Submit answer error:', mainErr);
+    toast(`Failed to post answer: ${mainErr.message || 'Unknown error'}`, 'err');
+  } finally {
+    // ALWAYS re-enable button
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.style.opacity = '1';
+    }
+  }
+};
+
+</script>
+</body>
+</html>
